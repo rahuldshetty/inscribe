@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import path from "path";
 import { marked } from "marked";
 import { parseFrontMatter } from "../utils/markdown";
-import { BlogScehma } from "../schemas/blog";
+import { Blog, BlogScehma } from "../schemas/blog";
 
 export const parseBlogPost = async (filePath: string) => {
     const content = fs.readFileSync(filePath, "utf-8");
@@ -14,32 +14,45 @@ export const parseBlogPost = async (filePath: string) => {
         markdown: body
     });
 
-    const html = await marked(validated.markdown);
-    const slug = path.basename(filePath, ".md");
-
-    return {
-        data: validated.metadata,
-        html,
-        slug
-    };
+    return validated;
 };
 
-export const renderBlogPage = (data: any, html: string, slug: string) => {
+export const renderBlogPage = async (blog: Blog) => {
+    const html = await marked(blog.markdown);
+
     return `
         <html>
             <head>
-                <title>${data.title || slug}</title>
+                <title>${blog.metadata.title}</title>
                 <style>
-                    body { font-family: sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 2rem; }
+                    body { font-family: sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 2rem; color: #333; }
                     a { color: #0070f3; text-decoration: none; }
                     a:hover { text-decoration: underline; }
+                    .cover-container { margin-bottom: 2rem; }
+                    .cover-image { width: 100%; height: auto; border-radius: 8px; }
+                    .cover-alt { font-size: 0.9rem; color: #666; margin-top: 0.5rem; text-align: center; }
+                    .tags { margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+                    .tag { background: #f0f0f0; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; color: #555; }
+                    header h1 { margin-bottom: 0.5rem; }
+                    .metadata { color: #666; font-size: 0.9rem; margin-bottom: 1rem; }
                 </style>
             </head>
             <body>
                 <nav><a href="/">← Back to Home</a></nav>
                 <header>
-                    <h1>${data.title || slug}</h1>
-                    <p>By ${data.author || "Unknown"} on ${data.date || "Unknown"}</p>
+                    <h1>${blog.metadata.title}</h1>
+                    <div class="metadata">
+                        By ${blog.metadata.author || "Unknown"} on ${blog.metadata.date || "Unknown"}
+                    </div>
+                    ${blog.metadata.cover ? `
+                        <div class="cover-container">
+                            <img src="${blog.metadata.cover}" alt="${blog.metadata.title}" class="cover-image" />
+                            ${blog.metadata.cover_alt ? `<div class="cover-alt">${blog.metadata.cover_alt}</div>` : ""}
+                        </div>
+                    ` : ""}
+                    <div class="tags">
+                        ${blog.metadata.tags?.map(tag => `<span class="tag">${tag}</span>`).join("")}
+                    </div>
                 </header>
                 <hr />
                 <article>${html}</article>
@@ -48,11 +61,11 @@ export const renderBlogPage = (data: any, html: string, slug: string) => {
     `;
 };
 
-export const renderIndexPage = (posts: any[]) => {
-    const postsHtml = posts.map(post => `
+export const renderIndexPage = (blogs: Blog[]) => {
+    const postsHtml = blogs.map(blog => `
         <li>
-            <a href="/blog/${post.slug}${post.isStatic ? '.html' : ''}">${post.title}</a>
-            <span style="color: #666; font-size: 0.9rem;"> - ${post.date || 'No date'}</span>
+            <a href="/blog/${blog.metadata.slug}">${blog.metadata.title}</a>
+            <span style="color: #666; font-size: 0.9rem;"> - ${blog.metadata.date || 'No date'}</span>
         </li>
     `).join("");
 

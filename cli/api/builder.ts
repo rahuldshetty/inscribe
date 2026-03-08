@@ -2,6 +2,7 @@ import fs from "fs-extra";
 import path from "path";
 import { minifyHtml } from "../utils/minifier";
 import { parseBlogPost, renderBlogPage, renderIndexPage } from "./renderer";
+import { Blog } from "../schemas/blog";
 
 export interface BuildOptions {
     sourceDir: string;
@@ -10,32 +11,26 @@ export interface BuildOptions {
 }
 
 const buildBlog = async (
-    blogDir: string,
     outputDir: string,
     files: string[],
     isRelease: boolean,
 ) => {
-    const postsMetadata: any[] = [];
+    const blogs: Blog[] = [];
 
     for (const filePath of files) {
-        const { data, html, slug } = await parseBlogPost(filePath);
-        let fullHtml = renderBlogPage(data, html, slug);
+        const blog = await parseBlogPost(filePath);
+        let fullHtml = await renderBlogPage(blog);
 
-        postsMetadata.push({
-            title: data.title || slug,
-            slug,
-            date: data.date,
-            isStatic: true
-        });
+        blogs.push(blog);
 
         if (isRelease) {
             fullHtml = await minifyHtml(fullHtml);
         }
 
-        await fs.writeFile(path.join(outputDir, "blog", `${slug}.html`), fullHtml);
+        await fs.writeFile(path.join(outputDir, "blog", `${blog.metadata.slug}.html`), fullHtml);
     }
 
-    return postsMetadata;
+    return blogs;
 }
 
 export async function build(options: BuildOptions) {
@@ -52,21 +47,24 @@ export async function build(options: BuildOptions) {
     await fs.ensureDir(path.join(outputDir, "blog"));
 
     // Build blog files
-    const blogFiles = fs.readdirSync(blogDir).filter((f) => f.endsWith(".md")).map((file) => path.join(blogDir, file));
+    const blogFiles = fs.readdirSync(blogDir, {
+        recursive: true,
+    }).filter((f): f is string => typeof f === "string" && f.endsWith(".md")
+    ).map((file) => path.join(blogDir, file));
+    console.log('No. of blog pages identified:', blogFiles.length);
 
-    const postsMetadata = await buildBlog(
-        blogDir,
+    const blogs = await buildBlog(
         outputDir,
         blogFiles,
         isRelease
     );
 
     // Generate index.html
-    let indexHtml = renderIndexPage(postsMetadata);
+    let indexPage = renderIndexPage(blogs);
 
     if (isRelease) {
-        indexHtml = await minifyHtml(indexHtml);
+        indexPage = await minifyHtml(indexPage);
     }
 
-    await fs.writeFile(path.join(outputDir, "index.html"), indexHtml);
+    await fs.writeFile(path.join(outputDir, "index.html"), indexPage);
 }
