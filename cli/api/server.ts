@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "path";
 import { marked } from "marked";
-import { parseFrontMatter } from "./utils/markdown";
+import { parseFrontMatter } from "../utils/markdown";
 
 export const LocalServer = (blogDir: string) => {
     return {
