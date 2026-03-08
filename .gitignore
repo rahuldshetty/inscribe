@@ -91,3 +91,4 @@ package-lock.json
 /lib/
 dist/
 tmp/
+tmp/*
