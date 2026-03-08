@@ -1,7 +1,7 @@
 ---
 title: "Lorem Ipsum"
 date: 2023-01-01T00:00:00+00:00
-doc: slug2
+slug: doc2
 draft: true
 description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
 author: "John Doe"

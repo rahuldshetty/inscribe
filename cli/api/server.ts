@@ -1,7 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
-import { marked } from "marked";
-import { parseFrontMatter } from "../utils/markdown";
+import { parseBlogPost, renderBlogPage, renderIndexPage } from "./renderer";
 
 export const LocalServer = (blogDir: string) => {
     return {
@@ -12,22 +11,19 @@ export const LocalServer = (blogDir: string) => {
 
             // Home page: List all blogs
             if (url.pathname === "/") {
-                const posts = files.map(file => {
-                    const content = fs.readFileSync(path.join(blogDir, file), "utf-8");
-                    const { data } = parseFrontMatter(content);
-                    const slug = file.replace(".md", "");
-                    return `<li><a href="/blog/${slug}">${data.title || slug}</a></li>`;
-                }).join("");
+                const posts = await Promise.all(files.map(async file => {
+                    const filePath = path.join(blogDir, file);
+                    const { data, slug } = await parseBlogPost(filePath);
+                    return {
+                        title: data.title || slug,
+                        slug,
+                        date: data.date,
+                        isStatic: false
+                    };
+                }));
 
-                return new Response(`
-                        <html>
-                            <head><title>Inscribe Dev Server</title></head>
-                            <body>
-                                <h1>Blog Posts</h1>
-                                <ul>${posts}</ul>
-                            </body>
-                        </html>
-                    `, { headers: { "Content-Type": "text/html" } });
+                const html = renderIndexPage(posts);
+                return new Response(html, { headers: { "Content-Type": "text/html" } });
             }
 
             // Blog page: Render specific blog
@@ -37,22 +33,9 @@ export const LocalServer = (blogDir: string) => {
                 const filePath = path.join(blogDir, fileName);
 
                 if (fs.existsSync(filePath)) {
-                    const content = fs.readFileSync(filePath, "utf-8");
-                    const { data, body } = parseFrontMatter(content);
-                    const html = marked(body);
-
-                    return new Response(`
-                            <html>
-                                <head><title>${data.title || slug}</title></head>
-                                <body>
-                                    <a href="/">← Back</a>
-                                    <h1>${data.title || slug}</h1>
-                                    <p>By ${data.author || "Unknown"} on ${data.date || "Unknown"}</p>
-                                    <hr />
-                                    <article>${html}</article>
-                                </body>
-                            </html>
-                        `, { headers: { "Content-Type": "text/html" } });
+                    const { data, html } = await parseBlogPost(filePath);
+                    const fullHtml = renderBlogPage(data, html, slug);
+                    return new Response(fullHtml, { headers: { "Content-Type": "text/html" } });
                 }
             }
 

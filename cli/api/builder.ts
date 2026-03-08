@@ -1,13 +1,41 @@
 import fs from "fs-extra";
 import path from "path";
-import { marked } from "marked";
-import { parseFrontMatter } from "../utils/markdown";
 import { minifyHtml } from "../utils/minifier";
+import { parseBlogPost, renderBlogPage, renderIndexPage } from "./renderer";
 
 export interface BuildOptions {
     sourceDir: string;
     outputDir: string;
     env: string;
+}
+
+const buildBlog = async (
+    blogDir: string,
+    outputDir: string,
+    files: string[],
+    isRelease: boolean,
+) => {
+    const postsMetadata: any[] = [];
+
+    for (const filePath of files) {
+        const { data, html, slug } = await parseBlogPost(filePath);
+        let fullHtml = renderBlogPage(data, html, slug);
+
+        postsMetadata.push({
+            title: data.title || slug,
+            slug,
+            date: data.date,
+            isStatic: true
+        });
+
+        if (isRelease) {
+            fullHtml = await minifyHtml(fullHtml);
+        }
+
+        await fs.writeFile(path.join(outputDir, "blog", `${slug}.html`), fullHtml);
+    }
+
+    return postsMetadata;
 }
 
 export async function build(options: BuildOptions) {
@@ -23,57 +51,18 @@ export async function build(options: BuildOptions) {
     await fs.ensureDir(outputDir);
     await fs.ensureDir(path.join(outputDir, "blog"));
 
-    const files = fs.readdirSync(blogDir).filter((f) => f.endsWith(".md"));
-    const postsMetadata: any[] = [];
+    // Build blog files
+    const blogFiles = fs.readdirSync(blogDir).filter((f) => f.endsWith(".md")).map((file) => path.join(blogDir, file));
 
-    for (const file of files) {
-        const filePath = path.join(blogDir, file);
-        const content = fs.readFileSync(filePath, "utf-8");
-        const { data, body } = parseFrontMatter(content);
-        const htmlContent = marked(body);
-        const slug = file.replace(".md", "");
-
-        postsMetadata.push({
-            slug,
-            title: data.title || slug,
-            author: data.author || "Unknown",
-            date: data.date || "Unknown",
-        });
-
-        let html = `
-            <html>
-                <head><title>${data.title || slug}</title></head>
-                <body>
-                    <a href="/">← Back</a>
-                    <h1>${data.title || slug}</h1>
-                    <p>By ${data.author || "Unknown"} on ${data.date || "Unknown"}</p>
-                    <hr />
-                    <article>${htmlContent}</article>
-                </body>
-            </html>
-        `;
-
-        if (isRelease) {
-            html = await minifyHtml(html);
-        }
-
-        await fs.writeFile(path.join(outputDir, "blog", `${slug}.html`), html);
-    }
+    const postsMetadata = await buildBlog(
+        blogDir,
+        outputDir,
+        blogFiles,
+        isRelease
+    );
 
     // Generate index.html
-    const postsHtml = postsMetadata
-        .map((post) => `<li><a href="/blog/${post.slug}.html">${post.title}</a></li>`)
-        .join("");
-
-    let indexHtml = `
-        <html>
-            <head><title>Inscribe Blog</title></head>
-            <body>
-                <h1>Blog Posts</h1>
-                <ul>${postsHtml}</ul>
-            </body>
-        </html>
-    `;
+    let indexHtml = renderIndexPage(postsMetadata);
 
     if (isRelease) {
         indexHtml = await minifyHtml(indexHtml);
