@@ -40,18 +40,27 @@ const devCommand = defineCommand(
         parameters: [
             "[path]",
         ],
+        flags: {
+            port: {
+                type: Number,
+                alias: "p",
+                default: 3000,
+                description: "Port to run development server on",
+            },
+        },
     },
     async (ctx) => {
         const sourceDir = path.resolve(process.cwd(), ctx.parameters.path || ".");
+        const port = ctx.flags.port;
 
         if (!fs.existsSync(sourceDir)) {
             console.error(`Error: directory not found ${sourceDir}`);
             return;
         }
 
-        console.log(`Starting dev server for: ${sourceDir}`);
+        console.log(`Starting dev server for: ${sourceDir} on port ${port}`);
 
-        const server = Bun.serve(LocalServer(sourceDir, true));
+        const server = Bun.serve(LocalServer(sourceDir, true, port));
 
         // Watch for changes and notify clients via WebSocket
         let debounceTimer: Timer | null = null;

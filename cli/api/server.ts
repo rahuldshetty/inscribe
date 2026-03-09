@@ -3,9 +3,9 @@ import path from "path";
 import { parseBlogPost, renderBlogPage, renderIndexPage } from "./renderer";
 import { readInscribeFile } from "./inscribe_reader";
 
-export const LocalServer = (sourceDir: string, isDev: boolean = false) => {
+export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 3000) => {
     return {
-        port: 3000,
+        port: port,
         async fetch(req: Request, server: any) {
             const url = new URL(req.url);
 
