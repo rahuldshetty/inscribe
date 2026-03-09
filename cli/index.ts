@@ -43,16 +43,15 @@ const devCommand = defineCommand(
     },
     async (ctx) => {
         const sourceDir = path.resolve(process.cwd(), ctx.parameters.path || ".");
-        const blogDir = path.join(sourceDir, "blog");
 
-        if (!fs.existsSync(blogDir)) {
-            console.error(`Error: 'blog' directory not found in ${sourceDir}`);
+        if (!fs.existsSync(sourceDir)) {
+            console.error(`Error: directory not found ${sourceDir}`);
             return;
         }
 
         console.log(`Starting dev server for: ${sourceDir}`);
 
-        const server = Bun.serve(LocalServer(blogDir));
+        const server = Bun.serve(LocalServer(sourceDir));
 
         console.log(`Server running at http://localhost:${server.port}`);
     }

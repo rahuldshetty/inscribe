@@ -3,6 +3,7 @@ import path from "path";
 import { marked } from "marked";
 import { parseFrontMatter } from "../utils/markdown";
 import { Blog, BlogScehma } from "../schemas/blog";
+import { InscribeConfig } from "../schemas/inscribe";
 
 export const parseBlogPost = async (filePath: string) => {
     const content = fs.readFileSync(filePath, "utf-8");
@@ -17,13 +18,13 @@ export const parseBlogPost = async (filePath: string) => {
     return validated;
 };
 
-export const renderBlogPage = async (blog: Blog) => {
+export const renderBlogPage = async (blog: Blog, inscribe: InscribeConfig) => {
     const html = await marked(blog.markdown);
 
     return `
         <html>
             <head>
-                <title>${blog.metadata.title}</title>
+                <title>${inscribe.title} | ${blog.metadata.title}</title>
                 <style>
                     body { font-family: sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 2rem; color: #333; }
                     a { color: #0070f3; text-decoration: none; }
@@ -61,7 +62,7 @@ export const renderBlogPage = async (blog: Blog) => {
     `;
 };
 
-export const renderIndexPage = (blogs: Blog[]) => {
+export const renderIndexPage = (blogs: Blog[], inscribe: InscribeConfig) => {
     const postsHtml = blogs.map(blog => `
         <li>
             <a href="/blog/${blog.metadata.slug}">${blog.metadata.title}</a>
