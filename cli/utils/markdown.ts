@@ -1,3 +1,5 @@
+import { marked } from "marked";
+
 export function parseFrontMatter(content: string) {
     const regex = /^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/;
     const match = content.match(regex);
@@ -15,4 +17,9 @@ export function parseFrontMatter(content: string) {
     });
 
     return { data, body };
+}
+
+export const markdown2HTML = async (content: string) => {
+    const html = await marked(content)
+    return html;
 }

@@ -1,7 +1,5 @@
 import fs from "fs-extra";
-import path from "path";
-import { marked } from "marked";
-import { parseFrontMatter } from "../utils/markdown";
+import { markdown2HTML, parseFrontMatter } from "../utils/markdown";
 import { Blog, BlogScehma } from "../schemas/blog";
 import { InscribeConfig } from "../schemas/inscribe";
 
@@ -19,7 +17,7 @@ export const parseBlogPost = async (filePath: string) => {
 };
 
 export const renderBlogPage = async (blog: Blog, inscribe: InscribeConfig, isDev: boolean = false) => {
-    const html = await marked(blog.markdown);
+    const html = markdown2HTML(blog.markdown);
 
     const reloadScript = isDev ? `
         <script>
