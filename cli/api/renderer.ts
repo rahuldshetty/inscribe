@@ -18,8 +18,24 @@ export const parseBlogPost = async (filePath: string) => {
     return validated;
 };
 
-export const renderBlogPage = async (blog: Blog, inscribe: InscribeConfig) => {
+export const renderBlogPage = async (blog: Blog, inscribe: InscribeConfig, isDev: boolean = false) => {
     const html = await marked(blog.markdown);
+
+    const reloadScript = isDev ? `
+        <script>
+            const socket = new WebSocket("ws://" + location.host + "/_reload");
+            socket.onmessage = (event) => {
+                if (event.data === "reload") {
+                    console.log("Reloading...");
+                    location.reload();
+                }
+            };
+            socket.onclose = () => {
+                console.log("Reload connection closed. Retrying in 2s...");
+                setTimeout(() => location.reload(), 2000);
+            };
+        </script>
+    ` : "";
 
     return `
         <html>
@@ -57,12 +73,29 @@ export const renderBlogPage = async (blog: Blog, inscribe: InscribeConfig) => {
                 </header>
                 <hr />
                 <article>${html}</article>
+                ${reloadScript}
             </body>
         </html>
     `;
 };
 
-export const renderIndexPage = (blogs: Blog[], inscribe: InscribeConfig) => {
+export const renderIndexPage = (blogs: Blog[], inscribe: InscribeConfig, isDev: boolean = false) => {
+    const reloadScript = isDev ? `
+        <script>
+            const socket = new WebSocket("ws://" + location.host + "/_reload");
+            socket.onmessage = (event) => {
+                if (event.data === "reload") {
+                    console.log("Reloading...");
+                    location.reload();
+                }
+            };
+            socket.onclose = () => {
+                console.log("Reload connection closed. Retrying in 2s...");
+                setTimeout(() => location.reload(), 2000);
+            };
+        </script>
+    ` : "";
+
     const postsHtml = blogs.map(blog => `
         <li>
             <a href="/blog/${blog.metadata.slug}">${blog.metadata.title}</a>
@@ -88,6 +121,7 @@ export const renderIndexPage = (blogs: Blog[], inscribe: InscribeConfig) => {
                     <h1>Blog Posts</h1>
                 </header>
                 <ul>${postsHtml}</ul>
+                ${reloadScript}
             </body>
         </html>
     `;

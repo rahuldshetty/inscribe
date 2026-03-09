@@ -51,7 +51,19 @@ const devCommand = defineCommand(
 
         console.log(`Starting dev server for: ${sourceDir}`);
 
-        const server = Bun.serve(LocalServer(sourceDir));
+        const server = Bun.serve(LocalServer(sourceDir, true));
+
+        // Watch for changes and notify clients via WebSocket
+        let debounceTimer: Timer | null = null;
+        fs.watch(sourceDir, { recursive: true }, (event, filename) => {
+            if (filename && (filename.endsWith(".md") || filename.endsWith(".yaml") || filename.endsWith(".yml") || filename.endsWith(".json"))) {
+                if (debounceTimer) clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    console.log(`File changed: ${filename}. Triggering reload...`);
+                    server.publish("reload", "reload");
+                }, 100);
+            }
+        });
 
         console.log(`Server running at http://localhost:${server.port}`);
     }

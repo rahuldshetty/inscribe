@@ -3,15 +3,22 @@ import path from "path";
 import { parseBlogPost, renderBlogPage, renderIndexPage } from "./renderer";
 import { readInscribeFile } from "./inscribe_reader";
 
-export const LocalServer = (sourceDir: string) => {
+export const LocalServer = (sourceDir: string, isDev: boolean = false) => {
     return {
         port: 3000,
-        async fetch(req: Request) {
+        async fetch(req: Request, server: any) {
+            const url = new URL(req.url);
+
+            // Handle WebSocket upgrade
+            if (isDev && url.pathname === "/_reload") {
+                const success = server.upgrade(req);
+                if (success) return undefined;
+            }
+
             const blogDir = path.join(sourceDir, "blog");
             if (!fs.existsSync(blogDir)) {
                 console.log('WARNING: blog directory not found.');
             }
-            const url = new URL(req.url);
             const files = fs.readdirSync(blogDir, {
                 recursive: true
             }).filter((f): f is string => typeof f === "string" && f.endsWith(".md"));
@@ -30,7 +37,7 @@ export const LocalServer = (sourceDir: string) => {
 
             // Home page: List all blogs
             if (url.pathname === "/") {
-                const html = renderIndexPage(blogs, inscribe);
+                const html = renderIndexPage(blogs, inscribe, isDev);
                 return new Response(html, { headers: { "Content-Type": "text/html" } });
             }
 
@@ -38,11 +45,20 @@ export const LocalServer = (sourceDir: string) => {
             if (url.pathname.startsWith("/blog/")) {
                 const slug = url.pathname.replace("/blog/", "");
                 const blog = blogs[slug2index[slug]];
-                const fullHtml = await renderBlogPage(blog, inscribe);
+                const fullHtml = await renderBlogPage(blog, inscribe, isDev);
                 return new Response(fullHtml, { headers: { "Content-Type": "text/html" } });
             }
 
             return new Response("Not Found", { status: 404 });
+        },
+        websocket: {
+            message(ws: any, message: string) { },
+            open(ws: any) {
+                ws.subscribe("reload");
+            },
+            close(ws: any) {
+                ws.unsubscribe("reload");
+            },
         },
     }
 }
