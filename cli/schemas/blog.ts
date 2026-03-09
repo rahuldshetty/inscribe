@@ -16,6 +16,7 @@ export const BlogMetadataSchema = z.object({
 export const BlogScehma = z.object({
     metadata: BlogMetadataSchema,
     markdown: z.string(),
+    isMDX: z.boolean().default(false),
 })
 
 export type Blog = z.infer<typeof BlogScehma>;

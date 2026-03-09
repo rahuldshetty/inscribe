@@ -56,7 +56,7 @@ export async function build(options: BuildOptions) {
     // Build blog files
     const blogFiles = fs.readdirSync(blogDir, {
         recursive: true,
-    }).filter((f): f is string => typeof f === "string" && f.endsWith(".md")
+    }).filter((f): f is string => typeof f === "string" && (f.endsWith(".md") || f.endsWith(".mdx"))
     ).map((file) => path.join(blogDir, file));
     console.log('No. of blog pages identified:', blogFiles.length);
 

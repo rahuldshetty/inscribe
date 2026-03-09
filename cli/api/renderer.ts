@@ -6,18 +6,20 @@ import { InscribeConfig } from "../schemas/inscribe";
 export const parseBlogPost = async (filePath: string) => {
     const content = fs.readFileSync(filePath, "utf-8");
     const { data, body } = parseFrontMatter(content);
+    const isMDX = filePath.endsWith(".mdx");
 
     // Validate with Zod
     const validated = BlogScehma.parse({
         metadata: data,
-        markdown: body
+        markdown: body,
+        isMDX
     });
 
     return validated;
 };
 
 export const renderBlogPage = async (blog: Blog, inscribe: InscribeConfig, isDev: boolean = false) => {
-    const html = markdown2HTML(blog.markdown);
+    const html = await markdown2HTML(blog.markdown, blog.isMDX);
 
     const reloadScript = isDev ? `
         <script>

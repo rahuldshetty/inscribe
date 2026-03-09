@@ -21,7 +21,7 @@ export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 30
             }
             const files = fs.readdirSync(blogDir, {
                 recursive: true
-            }).filter((f): f is string => typeof f === "string" && f.endsWith(".md"));
+            }).filter((f): f is string => typeof f === "string" && (f.endsWith(".md") || f.endsWith(".mdx")));
 
             const slug2index: Record<string, number> = {};
 
