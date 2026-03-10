@@ -1,42 +1,65 @@
-# sv
+<div align="center">
+  <img src="https://via.placeholder.com/150x150.png?text=Inscribe" alt="Inscribe Logo" width="120" />
+  <h1>Inscribe</h1>
+  <p><strong>A minimalist, high-performance Static Site Generator (SSG)</strong></p>
+  <p>
+    <img src="https://img.shields.io/badge/status-under%20development-orange" alt="Project Status" />
+    <img src="https://img.shields.io/badge/license-MIT-blue" alt="License" />
+    <img src="https://img.shields.io/badge/built%20with-Bun-black" alt="Built with Bun" />
+  </p>
+</div>
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+---
 
-## Creating a project
+Inscribe is a modern static site generator built with **Bun**, **MDX**, and **Preact**. It's designed to be fast, simple, and developer-friendly, making it perfect for blogs, documentation, and personal portfolios.
 
-If you're seeing this, you've probably already done this step. Congrats!
+> [!IMPORTANT]
+> This project is currently **under active development**. Features and APIs are subject to change.
 
-```sh
-# create a new project
-npx sv create my-app
+## ✨ Features
+
+- [x] **CLI** – Simple commands to scaffold, develop, and build your site.
+- [x] **Dev Server** – Local development server with instant live reload.
+- [x] **MDX & Markdown** – Write content using powerful MDX and standard Markdown.
+- [ ] **Search** – Integrated full-text search.
+- [ ] **Themes** – Customizable and extensible theme system.
+- [ ] **Plugins** – Flexible plugin architecture for extending functionality.
+
+## 🚀 Quick Start
+
+### Installation
+
+```bash
+# Using Bun (Recommended)
+bun install -g inscribe
+
+# Using npm
+npm install -g inscribe
 ```
 
-To recreate this project with the same configuration:
+### Usage
 
-```sh
-# recreate this project
-bun x sv@0.12.5 create --template minimal --types ts --add prettier eslint tailwindcss="plugins:typography" sveltekit-adapter="adapter:static" --install bun inscribe
+Scaffold a new project, start the development server, or build for production.
+
+```bash
+# Initialize a new project in the current directory
+inscribe init
+
+# Run the development server with live reload
+inscribe dev
+
+# Build the static site for production
+inscribe build
 ```
 
-## Developing
+## 🛠️ Commands
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+| Command        | Description                                                     |
+| :------------- | :-------------------------------------------------------------- |
+| `init`         | Create a new scaffold for your blog or portfolio.               |
+| `dev [path]`   | Start the local development server (default: `.` port `3000`).  |
+| `build [path]` | Generate a production-ready static website (default: `./dist`). |
 
-```sh
-npm run dev
+---
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+<p align="center">Made with ❤️ by <a href="https://github.com/rahuldshetty">rahuldshetty</a></p>
