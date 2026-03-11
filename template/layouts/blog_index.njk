@@ -1,0 +1,25 @@
+{% extends "base.njk" %}
+
+{% block title %}Blog Posts | {{ config.title }}{% endblock %}
+
+{% block extra_style %}
+    h1 { border-bottom: 2px solid #eaeaea; padding-bottom: 0.5rem; }
+    ul { list-style: none; padding: 0; }
+    li { margin-bottom: 1rem; padding: 0.5rem; border-radius: 4px; transition: background 0.2s; }
+    li:hover { background: #f9f9f9; }
+    .post-link { color: #0070f3; text-decoration: none; font-weight: bold; font-size: 1.2rem; }
+{% endblock %}
+
+{% block content %}
+    <header>
+        <h1>Blog Posts</h1>
+    </header>
+    <ul>
+        {% for blog in blogs %}
+            <li>
+                <a href="/blog/{{ blog.metadata.slug }}" class="post-link">{{ blog.metadata.title }}</a>
+                <span style="color: #666; font-size: 0.9rem;"> - {{ blog.metadata.date or 'No date' }}</span>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -13,6 +13,7 @@ export interface BuildOptions {
 }
 
 const buildBlog = async (
+    sourceDir: string,
     outputDir: string,
     files: string[],
     isRelease: boolean,
@@ -22,7 +23,7 @@ const buildBlog = async (
 
     for (const filePath of files) {
         const blog = await parseBlogPost(filePath);
-        let fullHtml = await renderBlogPage(blog, inscribe);
+        let fullHtml = await renderBlogPage(blog, inscribe, sourceDir);
 
         blogs.push(blog);
 
@@ -61,6 +62,7 @@ export async function build(options: BuildOptions) {
     console.log('No. of blog pages identified:', blogFiles.length);
 
     const blogs = await buildBlog(
+        sourceDir,
         outputDir,
         blogFiles,
         isRelease,
@@ -68,7 +70,7 @@ export async function build(options: BuildOptions) {
     );
 
     // Generate index.html
-    let indexPage = renderIndexPage(blogs, inscribe);
+    let indexPage = renderIndexPage(blogs, inscribe, sourceDir);
 
     if (isRelease) {
         indexPage = await minifyHtml(indexPage);

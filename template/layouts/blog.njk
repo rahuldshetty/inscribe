@@ -1,0 +1,26 @@
+{% extends "base.njk" %}
+
+{% block title %}{{ config.title }} | {{ blog.metadata.title }}{% endblock %}
+
+{% block content %}
+    <nav><a href="/">← Back to Home</a></nav>
+    <header>
+        <h1>{{ blog.metadata.title }}</h1>
+        <div class="metadata">
+            By {{ blog.metadata.author or "Unknown" }} on {{ blog.metadata.date or "Unknown" }}
+        </div>
+        {% if blog.metadata.cover %}
+            <div class="cover-container">
+                <img src="{{ blog.metadata.cover }}" alt="{{ blog.metadata.title }}" class="cover-image" />
+                {% if blog.metadata.cover_alt %}<div class="cover-alt">{{ blog.metadata.cover_alt }}</div>{% endif %}
+            </div>
+        {% endif %}
+        <div class="tags">
+            {% for tag in blog.metadata.tags %}
+                <span class="tag">{{ tag }}</span>
+            {% endfor %}
+        </div>
+    </header>
+    <hr />
+    <article>{{ content | safe }}</article>
+{% endblock %}

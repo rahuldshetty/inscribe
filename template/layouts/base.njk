@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ title }}{% endblock %}</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 2rem; color: #333; }
+        a { color: #0070f3; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .cover-container { margin-bottom: 2rem; }
+        .cover-image { width: 100%; height: auto; border-radius: 8px; }
+        .cover-alt { font-size: 0.9rem; color: #666; margin-top: 0.5rem; text-align: center; }
+        .tags { margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .tag { background: #f0f0f0; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; color: #555; }
+        header h1 { margin-bottom: 0.5rem; }
+        .metadata { color: #666; font-size: 0.9rem; margin-bottom: 1rem; }
+        {% block extra_style %}{% endblock %}
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    {% block content %}{% endblock %}
+
+    {% if isDev %}
+    <script>
+        const socket = new WebSocket("ws://" + location.host + "/_reload");
+        socket.onmessage = (event) => {
+            if (event.data === "reload") {
+                console.log("Reloading...");
+                location.reload();
+            }
+        };
+        socket.onclose = () => {
+            console.log("Reload connection closed. Retrying in 2s...");
+            setTimeout(() => location.reload(), 2000);
+        };
+    </script>
+    {% endif %}
+    {% block scripts %}{% endblock %}
+</body>
+</html>

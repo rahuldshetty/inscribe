@@ -37,7 +37,7 @@ export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 30
 
             // Home page: List all blogs
             if (url.pathname === "/") {
-                const html = renderIndexPage(blogs, inscribe, isDev);
+                const html = renderIndexPage(blogs, inscribe, sourceDir, isDev);
                 return new Response(html, { headers: { "Content-Type": "text/html" } });
             }
 
@@ -45,7 +45,7 @@ export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 30
             if (url.pathname.startsWith("/blog/")) {
                 const slug = url.pathname.replace("/blog/", "");
                 const blog = blogs[slug2index[slug]];
-                const fullHtml = await renderBlogPage(blog, inscribe, isDev);
+                const fullHtml = await renderBlogPage(blog, inscribe, sourceDir, isDev);
                 return new Response(fullHtml, { headers: { "Content-Type": "text/html" } });
             }
 
