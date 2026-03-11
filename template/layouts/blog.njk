@@ -3,24 +3,94 @@
 {% block title %}{{ config.title }} | {{ blog.metadata.title }}{% endblock %}
 
 {% block content %}
-    <nav><a href="/">← Back to Home</a></nav>
-    <header>
-        <h1>{{ blog.metadata.title }}</h1>
-        <div class="metadata">
-            By {{ blog.metadata.author or "Unknown" }} on {{ blog.metadata.date or "Unknown" }}
+<div class="min-h-screen">
+
+    {# Top Nav Bar #}
+    <nav class="sticky top-0 z-50 bg-white border-b border-gray-100 backdrop-blur-sm bg-white/90">
+        <div class="max-w-2xl mx-auto px-6 h-14 flex items-center justify-between">
+            <a href="/"
+               class="text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors duration-150 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                {{ config.title }}
+            </a>
         </div>
-        {% if blog.metadata.cover %}
-            <div class="cover-container">
-                <img src="{{ blog.metadata.cover }}" alt="{{ blog.metadata.title }}" class="cover-image" />
-                {% if blog.metadata.cover_alt %}<div class="cover-alt">{{ blog.metadata.cover_alt }}</div>{% endif %}
+    </nav>
+
+    {# Article Container #}
+    <main class="max-w-2xl mx-auto px-6 py-12">
+
+        {# Article Header #}
+        <header class="mb-10">
+            <h1 class="font-sans text-4xl sm:text-5xl font-bold leading-tight tracking-tight text-gray-900 mb-4">
+                {{ blog.metadata.title }}
+            </h1>
+
+            {# Meta: author + date #}
+            <div class="flex items-center gap-3 mt-6">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                    {{ (blog.metadata.author or "A")[0] | upper }}
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-900">{{ blog.metadata.author or "Unknown" }}</p>
+                    <p class="text-xs text-gray-400">{{ blog.metadata.date or "Unknown date" }}</p>
+                </div>
             </div>
+
+            {# Tags #}
+            {% if blog.metadata.tags and blog.metadata.tags.length %}
+            <div class="flex flex-wrap gap-2 mt-5">
+                {% for tag in blog.metadata.tags %}
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors cursor-default">
+                    {{ tag }}
+                </span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </header>
+
+        {# Cover Image #}
+        {% if blog.metadata.cover %}
+        <figure class="mb-10 -mx-6 sm:-mx-12">
+            <img
+                src="{{ blog.metadata.cover }}"
+                alt="{{ blog.metadata.cover_alt or blog.metadata.title }}"
+                class="w-full object-cover rounded-none sm:rounded-xl max-h-[480px]"
+            />
+            {% if blog.metadata.cover_alt %}
+            <figcaption class="text-center text-sm text-gray-400 mt-3 italic px-6">
+                {{ blog.metadata.cover_alt }}
+            </figcaption>
+            {% endif %}
+        </figure>
         {% endif %}
-        <div class="tags">
-            {% for tag in blog.metadata.tags %}
-                <span class="tag">{{ tag }}</span>
-            {% endfor %}
-        </div>
-    </header>
-    <hr />
-    <article>{{ content | safe }}</article>
+
+        {# Article Body — Typography plugin styles prose content #}
+        <article class="prose prose-lg prose-gray max-w-none
+                        prose-headings:font-sans prose-headings:font-bold prose-headings:tracking-tight
+                        prose-a:text-gray-900 prose-a:underline prose-a:decoration-gray-300 hover:prose-a:decoration-gray-700
+                        prose-blockquote:border-l-gray-300 prose-blockquote:text-gray-500 prose-blockquote:not-italic
+                        prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-normal prose-code:before:content-none prose-code:after:content-none
+                        prose-img:rounded-xl prose-img:shadow-sm prose-img:mx-auto
+                        prose-hr:border-gray-200
+                        prose-pre:bg-gray-900 prose-pre:text-gray-100">
+            {{ content | safe }}
+        </article>
+
+        {# Footer divider #}
+        <hr class="my-12 border-gray-200" />
+
+        <footer class="flex items-center justify-between text-sm text-gray-400">
+            <a href="/"
+               class="hover:text-gray-700 transition-colors flex items-center gap-1.5 font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                All posts
+            </a>
+            <span>{{ config.title }}</span>
+        </footer>
+    </main>
+</div>
 {% endblock %}
