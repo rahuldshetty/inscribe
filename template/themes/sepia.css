@@ -1,0 +1,39 @@
+/* ==========================================================================
+   Inscribe Theme: Sepia
+   A warm, reading-focused theme with low contrast to reduce eye strain.
+   Dark mode shifts to a warm charcoal rather than pure black/blue.
+   ========================================================================== */
+
+   :root {
+    color-scheme: light dark;
+  
+    /* Backgrounds: Warm cream (light), Warm charcoal (dark) */
+    --color-bg:       light-dark(#fbf0d9, #1c1b18);
+    --color-bg-nav:   light-dark(rgba(251, 240, 217, 0.90), rgba(28, 27, 24, 0.90));
+  
+    /* Text: Deep brown (light), Soft warm light (dark) */
+    --color-text:     light-dark(#433422, #cecdc3);
+    --color-muted:    light-dark(#8f8373, #87857e);
+  
+    /* Borders & dividers */
+    --color-border:   light-dark(#e6dac3, #383531);
+  
+    /* Links & accents: Warm red/orange */
+    --color-accent:   light-dark(#b24a3e, #d36a5d);
+  
+    /* Tag / badge pills */
+    --color-tag-bg:   light-dark(#eedfc5, #2d2a26);
+    --color-tag-text: light-dark(#5c4c3b, #b5b3a8);
+  
+    /* Inline code */
+    --color-code-bg:  light-dark(#eedfc5, #2d2a26);
+  
+    /* Code blocks */
+    --color-pre-bg:   light-dark(#433422, #111110);
+    --color-pre-text: light-dark(#fbf0d9, #cecdc3);
+  
+    /* Fonts */
+    --font-sans:      'Inter', sans-serif;
+    --font-serif:     'Merriweather', Georgia, serif;
+  }
+  

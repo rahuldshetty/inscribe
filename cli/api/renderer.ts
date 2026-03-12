@@ -4,6 +4,7 @@ import nunjucks from "nunjucks";
 import { markdown2HTML, parseFrontMatter } from "../utils/markdown";
 import { Blog, BlogScehma } from "../schemas/blog";
 import { InscribeConfig } from "../schemas/inscribe";
+import { resolveThemeCSS } from "./theme_resolver";
 
 export const parseBlogPost = async (filePath: string) => {
     const content = fs.readFileSync(filePath, "utf-8");
@@ -45,11 +46,13 @@ export const renderBlogPage = async (
 ) => {
     const html = await markdown2HTML(blog.markdown, blog.isMDX);
     const env = getRenderer(sourceDir);
+    const themeCSS = resolveThemeCSS(inscribe.theme ?? 'default', sourceDir);
 
     return env.render("blog.njk", {
         blog,
         config: inscribe,
         content: html,
+        themeCSS,
         isDev
     });
 };
@@ -61,10 +64,12 @@ export const renderIndexPage = (
     isDev: boolean = false
 ) => {
     const env = getRenderer(sourceDir);
+    const themeCSS = resolveThemeCSS(inscribe.theme ?? 'default', sourceDir);
 
     return env.render("blog_index.njk", {
         blogs,
         config: inscribe,
+        themeCSS,
         isDev
     });
 };

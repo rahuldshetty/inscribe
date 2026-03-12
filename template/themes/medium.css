@@ -1,0 +1,39 @@
+/* ==========================================================================
+   Inscribe Theme: Medium
+   Inspired by Medium.com: Clean serif fonts, high contrast text,
+   minimal borders.
+   ========================================================================== */
+
+   :root {
+    color-scheme: light dark;
+  
+    /* Backgrounds */
+    --color-bg:       light-dark(#ffffff, #121212);
+    --color-bg-nav:   light-dark(rgba(255, 255, 255, 0.95), rgba(18, 18, 18, 0.95));
+  
+    /* Text */
+    --color-text:     light-dark(#242424, #f2f2f2);
+    --color-muted:    light-dark(#6b6b6b, #a8a8a8); /* Lighter gray for dark mode meta */
+  
+    /* Borders & dividers: very subtle in medium */
+    --color-border:   light-dark(#f2f2f2, #242424);
+  
+    /* Links & accents: pure black/white or a soft green */
+    --color-accent:   light-dark(#000000, #ffffff);
+  
+    /* Tag / badge pills */
+    --color-tag-bg:   light-dark(#f2f2f2, #292929);
+    --color-tag-text: light-dark(#242424, #e2e8f0);
+  
+    /* Inline code */
+    --color-code-bg:  light-dark(#f9f9f9, #1e1e1e);
+  
+    /* Code blocks */
+    --color-pre-bg:   light-dark(#f9f9f9, #1e1e1e);
+    --color-pre-text: light-dark(#242424, #f2f2f2);
+  
+    /* Fonts: Fallback-serif as primary for that editorial look */
+    --font-sans:      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-serif:     'Merriweather', 'Charter', 'Georgia', serif;
+  }
+  
