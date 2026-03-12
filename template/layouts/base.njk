@@ -70,6 +70,10 @@
 
     {% block content %}{% endblock %}
 
+    {% block footer %}
+    {% include "partials/footer.njk" %}
+    {% endblock %}
+
     {% if isDev %}
     <script>
         const socket = new WebSocket("ws://" + location.host + "/_reload");
