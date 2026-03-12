@@ -83,6 +83,10 @@
 </head>
 <body class="bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased">
 
+    {% block header %}
+    {% include "partials/header.njk" %}
+    {% endblock %}
+
     {% block content %}{% endblock %}
 
     {% block footer %}

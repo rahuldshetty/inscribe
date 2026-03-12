@@ -38,38 +38,75 @@ const getRenderer = (sourceDir: string) => {
     );
 };
 
-export const renderBlogPage = async (
-    blog: Blog,
+export interface NavState {
+    hasHome: boolean;
+    hasBlog: boolean;
+    hasDocs: boolean;
+}
+
+export const renderSectionPage = async (
+    type: 'blog' | 'doc',
+    post: Blog,
     inscribe: InscribeConfig,
     sourceDir: string,
+    navState: NavState,
     isDev: boolean = false
 ) => {
-    const html = await markdown2HTML(blog.markdown, blog.isMDX);
+    const html = await markdown2HTML(post.markdown, post.isMDX);
     const env = getRenderer(sourceDir);
     const themeCSS = resolveThemeCSS(inscribe.theme ?? 'default', sourceDir);
 
-    return env.render("blog.njk", {
-        blog,
+    const template = type === 'blog' ? "blog.njk" : "doc.njk";
+
+    return env.render(template, {
+        post, // rename to post instead of blog to be generic
+        blog: post,
+        doc: post,
         config: inscribe,
         content: html,
         themeCSS,
+        navState,
         isDev
     });
 };
 
-export const renderIndexPage = (
-    blogs: Blog[],
+export const renderSectionIndexPage = (
+    type: 'blog' | 'doc',
+    posts: Blog[],
     inscribe: InscribeConfig,
     sourceDir: string,
+    navState: NavState,
+    isDev: boolean = false
+) => {
+    const env = getRenderer(sourceDir);
+    const themeCSS = resolveThemeCSS(inscribe.theme ?? 'default', sourceDir);
+    
+    const template = type === 'blog' ? "blog_index.njk" : "doc_index.njk";
+
+    return env.render(template, {
+        posts, // rename to posts
+        blogs: posts,
+        docs: posts,
+        config: inscribe,
+        themeCSS,
+        navState,
+        isDev
+    });
+};
+
+export const renderHomePage = (
+    inscribe: InscribeConfig,
+    sourceDir: string,
+    navState: NavState,
     isDev: boolean = false
 ) => {
     const env = getRenderer(sourceDir);
     const themeCSS = resolveThemeCSS(inscribe.theme ?? 'default', sourceDir);
 
-    return env.render("blog_index.njk", {
-        blogs,
+    return env.render("home.njk", {
         config: inscribe,
         themeCSS,
+        navState,
         isDev
     });
 };

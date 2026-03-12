@@ -5,6 +5,9 @@ export const InscribeSchema = z.object({
     tagline: z.string().default('Inscribe Blog').optional(),
     favicon: z.string().default('favicon.ico').optional(),
     theme: z.string().default('default'),
+    show_home: z.preprocess((val) => (typeof val === "string" ? val.toLowerCase() === "true" : val), z.boolean()).default(true),
+    blog_path: z.string().default('blog').optional(),
+    doc_path: z.string().default('docs').optional(),
 })
 
 export type InscribeConfig = z.infer<typeof InscribeSchema>;

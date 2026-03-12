@@ -1,2 +1,5 @@
 title: Demo Page
 theme: default
+show_home: true
+blog_path: "blogs"
+doc_path: "docs"
