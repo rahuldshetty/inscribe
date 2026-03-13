@@ -8,20 +8,55 @@
     {% if config.show_doc_nav !== false %}
     {# Left Navigation Sidebar #}
     <aside class="w-full md:w-64 flex-shrink-0 md:border-r border-[var(--color-border)] py-8 md:pr-8 px-6 md:px-0">
-        <nav class="sticky top-8 overflow-y-auto max-h-[calc(100vh-4rem)]">
-            {% for group in sidebarGroups %}
-                {% if group.dir %}
-                <h3 class="font-bold text-sm text-[var(--color-text)] uppercase tracking-wider mb-3 mt-6 first:mt-0">{{ group.dirTitle }}</h3>
-                {% endif %}
-                <ul class="space-y-2 {% if not group.dir %}mt-0{% endif %}">
-                    {% for item in group.posts %}
-                    <li>
-                        <a href="/doc/{{ item.metadata.slug }}" class="text-sm {% if item.metadata.slug == doc.metadata.slug %}text-[var(--color-text)] font-semibold{% else %}text-[var(--color-muted)] hover:text-[var(--color-text)]{% endif %} transition-colors block py-1">
-                            {{ item.metadata.title }}
-                        </a>
-                    </li>
+        <nav class="sticky top-8 overflow-y-auto overflow-x-hidden max-h-[calc(100vh-4rem)]">
+            {% macro renderNode(node, depth, currentDirPath) %}
+                {% if node.title %}
+                    <details class="group" {% if currentDirPath == node.path or currentDirPath.startsWith(node.path + '/') %}open{% endif %}>
+                        <summary class="flex items-center justify-between cursor-pointer list-none py-1.5 px-2 hover:bg-[var(--color-tag-bg)] rounded-md transition-all"
+                                 style="padding-left: {{ depth * 16 + 8 }}px">
+                            <span class="text-sm font-bold text-[var(--color-text)]">
+                                {{ node.title }}
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-[var(--color-muted)] transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </summary>
+                        <div class="mt-0.5">
+                            {% for item in node.items %}
+                                {% if item.type == 'folder' %}
+                                    {{ renderNode(item.node, depth + 1, currentDirPath) }}
+                                {% else %}
+                                    <div class="rounded-md hover:bg-[var(--color-tag-bg)] transition-all">
+                                        <a href="/doc/{{ item.post.metadata.slug }}" 
+                                           style="padding-left: {{ (depth + 1) * 16 + 8 }}px"
+                                           class="text-sm py-1.5 block transition-colors {% if item.post.metadata.slug == doc.metadata.slug %}text-[var(--color-text)] font-semibold border-l-2 border-[var(--color-text)] -ml-[2px]!{% else %}text-[var(--color-muted)] hover:text-[var(--color-text)]{% endif %}">
+                                            {{ item.post.metadata.title }}
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </details>
+                {% else %}
+                    {# Root node - just render items directly #}
+                    {% for item in node.items %}
+                        {% if item.type == 'folder' %}
+                            {{ renderNode(item.node, depth, currentDirPath) }}
+                        {% else %}
+                            <div class="rounded-md hover:bg-[var(--color-tag-bg)] transition-all">
+                                <a href="/doc/{{ item.post.metadata.slug }}" 
+                                   style="padding-left: {{ depth * 16 + 8 }}px"
+                                   class="text-sm py-1.5 block transition-colors {% if item.post.metadata.slug == doc.metadata.slug %}text-[var(--color-text)] font-semibold border-l-2 border-[var(--color-text)] -ml-[2px]!{% else %}text-[var(--color-muted)] hover:text-[var(--color-text)]{% endif %}">
+                                    {{ item.post.metadata.title }}
+                                </a>
+                            </div>
+                        {% endif %}
                     {% endfor %}
-                </ul>
+                {% endif %}
+            {% endmacro %}
+
+            {% for rootNode in sidebarTree %}
+                {{ renderNode(rootNode, 0, currentDirPath) }}
             {% endfor %}
         </nav>
     </aside>

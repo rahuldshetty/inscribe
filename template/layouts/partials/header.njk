@@ -13,11 +13,11 @@
             {% if navState.hasHome %}
             <a href="/" class="text-sm font-medium text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors">Home</a>
             {% endif %}
-            {% if navState.hasBlog %}
-            <a href="/blogs/" class="text-sm font-medium text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors">Blogs</a>
-            {% endif %}
             {% if navState.hasDocs %}
             <a href="/docs/" class="text-sm font-medium text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors">Docs</a>
+            {% endif %}
+            {% if navState.hasBlog %}
+            <a href="/blogs/" class="text-sm font-medium text-[var(--color-muted)] hover:text-[var(--color-accent)] transition-colors">Blogs</a>
             {% endif %}
         </div>
     </div>

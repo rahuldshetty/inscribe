@@ -46,26 +46,75 @@ export interface NavState {
     hasDocs: boolean;
 }
 
-const getSidebarGroups = (posts: Blog[], folderMetadata: Record<string, FolderMetadata> = {}) => {
-    const grouped = posts.reduce((acc, p) => {
-        let dir = path.dirname((p as any).relativePath || '');
-        if (dir === '.') dir = '';
-        if (!acc[dir]) acc[dir] = [];
-        acc[dir].push(p);
-        return acc;
-    }, {} as Record<string, Blog[]>);
+export type SidebarItem = 
+    | { type: 'folder'; node: SidebarNode }
+    | { type: 'file'; post: Blog };
 
-    return Object.entries(grouped)
-        .map(([dir, p]) => {
-            const meta = folderMetadata[dir] || { title: dir, weight: 0 };
-            return { dir, dirTitle: meta.title || dir, weight: meta.weight || 0, posts: p };
-        })
-        .sort((a, b) => {
-            if (a.weight !== b.weight) {
-                return a.weight - b.weight;
-            }
-            return a.dirTitle.localeCompare(b.dirTitle);
+export interface SidebarNode {
+    title: string;
+    path: string;
+    weight: number;
+    items: SidebarItem[];
+}
+
+const getSidebarTree = (posts: Blog[], folderMetadata: Record<string, FolderMetadata> = {}): SidebarNode[] => {
+    // Root node — holds top-level files and sub-folder nodes
+    const root: SidebarNode = { title: '', path: '', weight: 0, items: [] };
+
+    // Map from path string to its SidebarNode (for quick lookup)
+    const nodeMap = new Map<string, SidebarNode>();
+    nodeMap.set('', root);
+
+    // Helper: ensure all ancestor nodes exist for a given path
+    const ensureNode = (dirPath: string): SidebarNode => {
+        if (nodeMap.has(dirPath)) return nodeMap.get(dirPath)!;
+
+        // Ensure parent exists first
+        const parentPath = path.dirname(dirPath).replace(/\\/g, '/');
+        const parent = ensureNode(parentPath === '.' ? '' : parentPath);
+
+        const meta = folderMetadata[dirPath] || { title: path.basename(dirPath), weight: 0 };
+        const node: SidebarNode = {
+            title: meta.title || path.basename(dirPath),
+            path: dirPath,
+            weight: meta.weight || 0,
+            items: [],
+        };
+        nodeMap.set(dirPath, node);
+        parent.items.push({ type: 'folder', node });
+        return node;
+    };
+
+    // Place each post in the correct node
+    for (const post of posts) {
+        let dir = path.dirname((post as any).relativePath || '').replace(/\\/g, '/');
+        if (dir === '.') dir = '';
+        const node = ensureNode(dir);
+        node.items.push({ type: 'file', post });
+    }
+
+    // Recursively sort items within each node
+    const sortNode = (node: SidebarNode) => {
+        node.items.sort((a, b) => {
+            const wA = a.type === 'folder' ? a.node.weight : (a.post.metadata.weight ?? 0);
+            const wB = b.type === 'folder' ? b.node.weight : (b.post.metadata.weight ?? 0);
+            
+            if (wA !== wB) return wA - wB;
+            
+            const tA = a.type === 'folder' ? a.node.title : a.post.metadata.title;
+            const tB = b.type === 'folder' ? b.node.title : b.post.metadata.title;
+            return tA.localeCompare(tB);
         });
+
+        for (const item of node.items) {
+            if (item.type === 'folder') {
+                sortNode(item.node);
+            }
+        }
+    };
+    sortNode(root);
+
+    return root.items.length > 0 ? [root] : [];
 };
 
 export const renderSectionPage = async (
@@ -84,12 +133,14 @@ export const renderSectionPage = async (
 
     const template = type === 'blog' ? "blog.njk" : "doc.njk";
     
-    const sidebarGroups = type === 'doc' ? getSidebarGroups(allPosts, folderMetadata) : [];
+    const sidebarTree = type === 'doc' ? getSidebarTree(allPosts, folderMetadata) : [];
+    const currentDirPath = path.dirname((post as any).relativePath || '').replace(/\\/g, '/').replace(/^\.$/, '');
 
     return env.render(template, {
         post, // rename to post instead of blog to be generic
         allPosts,
-        sidebarGroups,
+        sidebarTree,
+        currentDirPath,
         blog: post,
         doc: post,
         config: inscribe,
@@ -114,12 +165,13 @@ export const renderSectionIndexPage = (
     
     const template = type === 'blog' ? "blog_index.njk" : "doc_index.njk";
     
-    const sidebarGroups = type === 'doc' ? getSidebarGroups(posts, folderMetadata) : [];
+    const sidebarTree = type === 'doc' ? getSidebarTree(posts, folderMetadata) : [];
 
     return env.render(template, {
         posts, // rename to posts
         allPosts: posts,
-        sidebarGroups,
+        sidebarTree,
+        currentDirPath: '',
         blogs: posts,
         docs: posts,
         config: inscribe,

@@ -63,7 +63,8 @@ export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 30
                 for (const f of files) {
                     if (f.endsWith("index.md")) {
                         const absDir = path.dirname(path.join(dir, f));
-                        meta[path.relative(dir, absDir) || ''] = parseFolderMetadata(absDir);
+                        const relDir = path.relative(dir, absDir);
+                        meta[relDir.replace(/\\/g, '/') || ''] = parseFolderMetadata(absDir);
                     }
                 }
                 return meta;
