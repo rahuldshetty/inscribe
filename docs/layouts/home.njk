@@ -1,0 +1,50 @@
+{% extends "base.njk" %}
+
+{% block title %}{{ config.title }}{% endblock %}
+
+{% block content %}
+<div class="min-h-[calc(100vh-8rem)] flex flex-col items-center justify-center text-center px-6 py-12">
+    <div class="max-w-4xl">
+        <!-- Logo Placeholder -->
+        <div class="mb-10 flex justify-center">
+            <div class="w-24 h-24 bg-gradient-to-br from-[var(--color-text)] to-[var(--color-muted)] rounded-2xl flex items-center justify-center shadow-2xl transform rotate-12 hover:rotate-0 transition-transform duration-500">
+                <span class="text-4xl text-[var(--color-bg)] font-black">i</span>
+            </div>
+        </div>
+
+        <h1 class="text-6xl sm:text-8xl font-black tracking-tight text-[var(--color-text)] mb-8 bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-text)] to-[var(--color-muted)]">
+            {{ config.title }}
+        </h1>
+        <p class="text-xl sm:text-3xl text-[var(--color-muted)] mb-12 leading-relaxed font-light">
+            {{ config.tagline }}
+        </p>
+        <div class="flex flex-col sm:flex-row gap-6 items-center justify-center mb-20">
+            {% if navState.hasDocs %}
+            <a href="/docs/" class="px-10 py-4 w-full sm:w-auto text-xl font-bold text-[var(--color-bg)] bg-[var(--color-text)] rounded-xl hover:scale-105 transition-all shadow-lg">
+                Get Started
+            </a>
+            {% endif %}
+            <a href="https://github.com/rahuldshetty/inscribe" class="px-10 py-4 w-full sm:w-auto text-xl font-bold text-[var(--color-text)] border-2 border-[var(--color-border)] rounded-xl hover:bg-[var(--color-border)] transition-all">
+                GitHub
+            </a>
+        </div>
+
+        <!-- content/About Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left border-t border-[var(--color-border)] pt-16">
+            <div class="space-y-4">
+                <h3 class="text-2xl font-bold text-[var(--color-text)]">Fast & Modern</h3>
+                <p class="text-[var(--color-muted)] leading-relaxed">Built with performance in mind using Bun and modern web standards for lightning-fast builds.</p>
+            </div>
+            <div class="space-y-4">
+                <h3 class="text-2xl font-bold text-[var(--color-text)]">Highly Customizable</h3>
+                <p class="text-[var(--color-muted)] leading-relaxed">Flexibe Nunjucks templating system and a powerful theming engine with CSS variables.</p>
+            </div>
+            <div class="space-y-4">
+                <h3 class="text-2xl font-bold text-[var(--color-text)]">Dev Focused</h3>
+                <p class="text-[var(--color-muted)] leading-relaxed">Zero-config for standard projects, but infinite power with markdown extensions and custom layouts.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
