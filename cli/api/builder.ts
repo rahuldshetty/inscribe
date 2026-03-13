@@ -22,11 +22,11 @@ const buildSection = async (
     isRelease: boolean,
     inscribe: InscribeConfig,
     navState: NavState
-) => {
+): Promise<{ posts: Blog[]; folderMetadata: Record<string, FolderMetadata> }> => {
     const posts: Blog[] = [];
     const singularFolder = type === 'blog' ? 'blog' : 'doc';
     const sectionRoot = path.join(sourceDir, type === 'doc' ? (inscribe.doc_path || 'docs') : (inscribe.blog_path || 'blog'));
-    
+
     await fs.ensureDir(path.join(outputDir, singularFolder));
 
     const folderMetadata: Record<string, FolderMetadata> = {};
@@ -36,37 +36,28 @@ const buildSection = async (
             const dir = path.dirname(filePath);
             const relativeDir = path.relative(sectionRoot, dir);
             folderMetadata[relativeDir || ''] = parseFolderMetadata(dir);
-            continue; // Skip building it as a regular document
+            continue;
         }
 
         const post = await parseBlogPost(filePath);
-        // compute relative path for grouping in sidebar
-        const relativePath = path.relative(sectionRoot, filePath);
-        (post as any).relativePath = relativePath;
+        (post as any).relativePath = path.relative(sectionRoot, filePath);
         posts.push(post);
     }
-    
-    // sort by weight, then slug
+
     posts.sort((a, b) => {
-        const weightA = a.metadata.weight || 0;
-        const weightB = b.metadata.weight || 0;
-        if (weightA !== weightB) {
-            return weightA - weightB;
-        }
+        const weightA = a.metadata.weight ?? 0;
+        const weightB = b.metadata.weight ?? 0;
+        if (weightA !== weightB) return weightA - weightB;
         return a.metadata.slug.localeCompare(b.metadata.slug);
     });
 
     for (const post of posts) {
         let fullHtml = await renderSectionPage(type, post, posts, folderMetadata, inscribe, sourceDir, navState);
-
-        if (isRelease) {
-            fullHtml = await minifyHtml(fullHtml);
-        }
-
+        if (isRelease) fullHtml = await minifyHtml(fullHtml);
         await fs.writeFile(path.join(outputDir, singularFolder, `${post.metadata.slug}.html`), fullHtml);
     }
 
-    return posts;
+    return { posts, folderMetadata };
 }
 
 export async function build(options: BuildOptions) {
@@ -101,16 +92,16 @@ export async function build(options: BuildOptions) {
         const blogFiles = fs.readdirSync(blogDir, { recursive: true })
             .filter((f): f is string => typeof f === "string" && (f.endsWith(".md") || f.endsWith(".mdx")))
             .map((file) => path.join(blogDir, file));
-        
+
         console.log('No. of blog pages identified:', blogFiles.length);
 
-        const blogs = await buildSection('blog', sourceDir, outputDir, blogFiles, isRelease, inscribe, navState);
+        const { posts: blogs } = await buildSection('blog', sourceDir, outputDir, blogFiles, isRelease, inscribe, navState);
 
         await fs.ensureDir(path.join(outputDir, "blogs"));
         let blogIndex = renderSectionIndexPage('blog', blogs, {}, inscribe, sourceDir, navState);
         if (isRelease) blogIndex = await minifyHtml(blogIndex);
         await fs.writeFile(path.join(outputDir, "blogs", "index.html"), blogIndex);
-        
+
         if (!redirectUrl) redirectUrl = "/blogs/";
     }
 
@@ -119,19 +110,11 @@ export async function build(options: BuildOptions) {
         const docFiles = fs.readdirSync(docDir, { recursive: true })
             .filter((f): f is string => typeof f === "string" && (f.endsWith(".md") || f.endsWith(".mdx")))
             .map((file) => path.join(docDir, file));
-        
+
         console.log('No. of doc pages identified:', docFiles.length);
 
-        const docs = await buildSection('doc', sourceDir, outputDir, docFiles, isRelease, inscribe, navState);
-
-        const folderMetadata: Record<string, FolderMetadata> = {};
-        for (const f of docFiles) {
-            if (f.endsWith("index.md")) {
-                const dir = path.dirname(f);
-                const relativeDir = path.relative(path.join(sourceDir, inscribe.doc_path || 'docs'), dir);
-                folderMetadata[relativeDir || ''] = parseFolderMetadata(dir);
-            }
-        }
+        // folderMetadata is computed once inside buildSection and reused for the index page
+        const { posts: docs, folderMetadata } = await buildSection('doc', sourceDir, outputDir, docFiles, isRelease, inscribe, navState);
 
         await fs.ensureDir(path.join(outputDir, "docs"));
         let docIndex = renderSectionIndexPage('doc', docs, folderMetadata, inscribe, sourceDir, navState);
