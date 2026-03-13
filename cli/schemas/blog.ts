@@ -11,6 +11,7 @@ export const BlogMetadataSchema = z.object({
     cover_alt: z.string().default("").optional(),
     tags: z.string().transform(val => val.split(",").map(t => t.trim())).optional(),
     showToc: z.preprocess((val) => (typeof val === "string" ? val.toLowerCase() === "true" : val), z.boolean()).default(false),
+    weight: z.number().default(0).optional(),
 });
 
 export const BlogScehma = z.object({

@@ -2,6 +2,7 @@ import fs from "fs-extra";
 import path from "path";
 import { parseBlogPost, renderSectionPage, renderSectionIndexPage, renderHomePage, NavState } from "./renderer";
 import { readInscribeFile } from "./inscribe_reader";
+import { parseFolderMetadata } from "../utils/markdown";
 
 export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 3000) => {
     return {
@@ -34,7 +35,19 @@ export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 30
                 : [];
 
             const blogFiles = getFiles(blogDir);
-            const docFiles = getFiles(docDir);
+            const docFilesRaw = getFiles(docDir);
+            
+            const docFiles = docFilesRaw.filter(f => !f.endsWith("index.md"));
+            const docFolderMetadata: Record<string, any> = {};
+            if (docDir) {
+                for (const f of docFilesRaw) {
+                    if (f.endsWith("index.md")) {
+                        const dir = path.dirname(path.join(docDir, f));
+                        const relativeDir = path.relative(docDir, dir);
+                        docFolderMetadata[relativeDir || ''] = parseFolderMetadata(dir);
+                    }
+                }
+            }
 
             // Home page
             if (url.pathname === "/") {
@@ -54,7 +67,7 @@ export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 30
             if (url.pathname === "/blogs" || url.pathname === "/blogs/") {
                 if (hasBlog && blogDir) {
                     const blogs = await Promise.all(blogFiles.map(f => parseBlogPost(path.join(blogDir, f))));
-                    const html = renderSectionIndexPage('blog', blogs, inscribe, sourceDir, navState, isDev);
+                    const html = renderSectionIndexPage('blog', blogs, {}, inscribe, sourceDir, navState, isDev);
                     return new Response(html, { headers: { "Content-Type": "text/html" } });
                 }
             }
@@ -62,8 +75,20 @@ export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 30
             // Docs index
             if (url.pathname === "/docs" || url.pathname === "/docs/") {
                 if (hasDocs && docDir) {
-                    const docs = await Promise.all(docFiles.map(f => parseBlogPost(path.join(docDir, f))));
-                    const html = renderSectionIndexPage('doc', docs, inscribe, sourceDir, navState, isDev);
+                    const docs = await Promise.all(docFiles.map(async f => {
+                        const post = await parseBlogPost(path.join(docDir, f));
+                        (post as any).relativePath = path.relative(docDir, path.join(docDir, f));
+                        return post;
+                    }));
+                    
+                    docs.sort((a, b) => {
+                        const weightA = a.metadata.weight || 0;
+                        const weightB = b.metadata.weight || 0;
+                        if (weightA !== weightB) return weightA - weightB;
+                        return a.metadata.slug.localeCompare(b.metadata.slug);
+                    });
+                    
+                    const html = renderSectionIndexPage('doc', docs, docFolderMetadata, inscribe, sourceDir, navState, isDev);
                     return new Response(html, { headers: { "Content-Type": "text/html" } });
                 }
             }
@@ -74,7 +99,8 @@ export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 30
                 const matchedFile = blogFiles.find(f => f.includes(slug));
                 if (matchedFile) {
                     const blog = await parseBlogPost(path.join(blogDir, matchedFile));
-                    const fullHtml = await renderSectionPage('blog', blog, inscribe, sourceDir, navState, isDev);
+                    const blogs = await Promise.all(blogFiles.map(f => parseBlogPost(path.join(blogDir, f))));
+                    const fullHtml = await renderSectionPage('blog', blog, blogs, {}, inscribe, sourceDir, navState, isDev);
                     return new Response(fullHtml, { headers: { "Content-Type": "text/html" } });
                 }
             }
@@ -85,7 +111,22 @@ export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 30
                 const matchedFile = docFiles.find(f => f.includes(slug));
                 if (matchedFile) {
                     const doc = await parseBlogPost(path.join(docDir, matchedFile));
-                    const fullHtml = await renderSectionPage('doc', doc, inscribe, sourceDir, navState, isDev);
+                    (doc as any).relativePath = path.relative(docDir, path.join(docDir, matchedFile));
+                    
+                    const docs = await Promise.all(docFiles.map(async f => {
+                        const post = await parseBlogPost(path.join(docDir, f));
+                        (post as any).relativePath = path.relative(docDir, path.join(docDir, f));
+                        return post;
+                    }));
+                    
+                    docs.sort((a, b) => {
+                        const weightA = a.metadata.weight || 0;
+                        const weightB = b.metadata.weight || 0;
+                        if (weightA !== weightB) return weightA - weightB;
+                        return a.metadata.slug.localeCompare(b.metadata.slug);
+                    });
+
+                    const fullHtml = await renderSectionPage('doc', doc, docs, docFolderMetadata, inscribe, sourceDir, navState, isDev);
                     return new Response(fullHtml, { headers: { "Content-Type": "text/html" } });
                 }
             }

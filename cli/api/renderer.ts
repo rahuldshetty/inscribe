@@ -38,15 +38,41 @@ const getRenderer = (sourceDir: string) => {
     );
 };
 
+import { FolderMetadata } from "../schemas/folder";
+
 export interface NavState {
     hasHome: boolean;
     hasBlog: boolean;
     hasDocs: boolean;
 }
 
+const getSidebarGroups = (posts: Blog[], folderMetadata: Record<string, FolderMetadata> = {}) => {
+    const grouped = posts.reduce((acc, p) => {
+        let dir = path.dirname((p as any).relativePath || '');
+        if (dir === '.') dir = '';
+        if (!acc[dir]) acc[dir] = [];
+        acc[dir].push(p);
+        return acc;
+    }, {} as Record<string, Blog[]>);
+
+    return Object.entries(grouped)
+        .map(([dir, p]) => {
+            const meta = folderMetadata[dir] || { title: dir, weight: 0 };
+            return { dir, dirTitle: meta.title || dir, weight: meta.weight || 0, posts: p };
+        })
+        .sort((a, b) => {
+            if (a.weight !== b.weight) {
+                return a.weight - b.weight;
+            }
+            return a.dirTitle.localeCompare(b.dirTitle);
+        });
+};
+
 export const renderSectionPage = async (
     type: 'blog' | 'doc',
     post: Blog,
+    allPosts: Blog[],
+    folderMetadata: Record<string, FolderMetadata>,
     inscribe: InscribeConfig,
     sourceDir: string,
     navState: NavState,
@@ -57,9 +83,13 @@ export const renderSectionPage = async (
     const themeCSS = resolveThemeCSS(inscribe.theme ?? 'default', sourceDir);
 
     const template = type === 'blog' ? "blog.njk" : "doc.njk";
+    
+    const sidebarGroups = type === 'doc' ? getSidebarGroups(allPosts, folderMetadata) : [];
 
     return env.render(template, {
         post, // rename to post instead of blog to be generic
+        allPosts,
+        sidebarGroups,
         blog: post,
         doc: post,
         config: inscribe,
@@ -73,6 +103,7 @@ export const renderSectionPage = async (
 export const renderSectionIndexPage = (
     type: 'blog' | 'doc',
     posts: Blog[],
+    folderMetadata: Record<string, FolderMetadata>,
     inscribe: InscribeConfig,
     sourceDir: string,
     navState: NavState,
@@ -82,9 +113,13 @@ export const renderSectionIndexPage = (
     const themeCSS = resolveThemeCSS(inscribe.theme ?? 'default', sourceDir);
     
     const template = type === 'blog' ? "blog_index.njk" : "doc_index.njk";
+    
+    const sidebarGroups = type === 'doc' ? getSidebarGroups(posts, folderMetadata) : [];
 
     return env.render(template, {
         posts, // rename to posts
+        allPosts: posts,
+        sidebarGroups,
         blogs: posts,
         docs: posts,
         config: inscribe,

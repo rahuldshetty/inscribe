@@ -5,6 +5,8 @@ import { parseBlogPost, renderSectionPage, renderSectionIndexPage, renderHomePag
 import { Blog } from "../schemas/blog";
 import { InscribeConfig } from "../schemas/inscribe";
 import { readInscribeFile } from "./inscribe_reader";
+import { parseFolderMetadata } from "../utils/markdown";
+import { FolderMetadata } from "../schemas/folder";
 
 export interface BuildOptions {
     sourceDir: string;
@@ -23,14 +25,39 @@ const buildSection = async (
 ) => {
     const posts: Blog[] = [];
     const singularFolder = type === 'blog' ? 'blog' : 'doc';
-
+    const sectionRoot = path.join(sourceDir, type === 'doc' ? (inscribe.doc_path || 'docs') : (inscribe.blog_path || 'blog'));
+    
     await fs.ensureDir(path.join(outputDir, singularFolder));
 
-    for (const filePath of files) {
-        const post = await parseBlogPost(filePath);
-        let fullHtml = await renderSectionPage(type, post, inscribe, sourceDir, navState);
+    const folderMetadata: Record<string, FolderMetadata> = {};
 
+    for (const filePath of files) {
+        if (filePath.endsWith("index.md")) {
+            const dir = path.dirname(filePath);
+            const relativeDir = path.relative(sectionRoot, dir);
+            folderMetadata[relativeDir || ''] = parseFolderMetadata(dir);
+            continue; // Skip building it as a regular document
+        }
+
+        const post = await parseBlogPost(filePath);
+        // compute relative path for grouping in sidebar
+        const relativePath = path.relative(sectionRoot, filePath);
+        (post as any).relativePath = relativePath;
         posts.push(post);
+    }
+    
+    // sort by weight, then slug
+    posts.sort((a, b) => {
+        const weightA = a.metadata.weight || 0;
+        const weightB = b.metadata.weight || 0;
+        if (weightA !== weightB) {
+            return weightA - weightB;
+        }
+        return a.metadata.slug.localeCompare(b.metadata.slug);
+    });
+
+    for (const post of posts) {
+        let fullHtml = await renderSectionPage(type, post, posts, folderMetadata, inscribe, sourceDir, navState);
 
         if (isRelease) {
             fullHtml = await minifyHtml(fullHtml);
@@ -80,7 +107,7 @@ export async function build(options: BuildOptions) {
         const blogs = await buildSection('blog', sourceDir, outputDir, blogFiles, isRelease, inscribe, navState);
 
         await fs.ensureDir(path.join(outputDir, "blogs"));
-        let blogIndex = renderSectionIndexPage('blog', blogs, inscribe, sourceDir, navState);
+        let blogIndex = renderSectionIndexPage('blog', blogs, {}, inscribe, sourceDir, navState);
         if (isRelease) blogIndex = await minifyHtml(blogIndex);
         await fs.writeFile(path.join(outputDir, "blogs", "index.html"), blogIndex);
         
@@ -97,8 +124,17 @@ export async function build(options: BuildOptions) {
 
         const docs = await buildSection('doc', sourceDir, outputDir, docFiles, isRelease, inscribe, navState);
 
+        const folderMetadata: Record<string, FolderMetadata> = {};
+        for (const f of docFiles) {
+            if (f.endsWith("index.md")) {
+                const dir = path.dirname(f);
+                const relativeDir = path.relative(path.join(sourceDir, inscribe.doc_path || 'docs'), dir);
+                folderMetadata[relativeDir || ''] = parseFolderMetadata(dir);
+            }
+        }
+
         await fs.ensureDir(path.join(outputDir, "docs"));
-        let docIndex = renderSectionIndexPage('doc', docs, inscribe, sourceDir, navState);
+        let docIndex = renderSectionIndexPage('doc', docs, folderMetadata, inscribe, sourceDir, navState);
         if (isRelease) docIndex = await minifyHtml(docIndex);
         await fs.writeFile(path.join(outputDir, "docs", "index.html"), docIndex);
 

@@ -3,6 +3,22 @@ import { parse as yamlParse } from "yaml";
 import { compile, run } from "@mdx-js/mdx";
 import * as jsxRuntime from "preact/jsx-runtime"
 import render from "preact-render-to-string"
+import fs from "fs-extra";
+import path from "path";
+import { FolderMetadataSchema, FolderMetadata } from "../schemas/folder";
+
+export const parseFolderMetadata = (dirPath: string): FolderMetadata => {
+    const indexPath = path.join(dirPath, "index.md");
+    if (fs.existsSync(indexPath)) {
+        const content = fs.readFileSync(indexPath, "utf-8");
+        const { data } = parseFrontMatter(content);
+        const validated = FolderMetadataSchema.safeParse(data);
+        if (validated.success) {
+            return validated.data;
+        }
+    }
+    return { title: path.basename(dirPath), weight: 0 };
+};
 
 export function parseFrontMatter(content: string) {
     const regex = /^---\s*\r?\n([\s\S]*?)\r?\n---\s*\r?\n?([\s\S]*)$/;
