@@ -65,35 +65,6 @@
     {# Article Container #}
     <main class="flex-1 min-w-0 px-6 py-12 lg:px-12 {% if config.show_doc_nav === false %}max-w-2xl mx-auto{% else %}max-w-3xl{% endif %}">
 
-        {# Article Header #}
-        <header class="mb-10">
-            <h1 class="font-sans text-4xl sm:text-5xl font-bold leading-tight tracking-tight text-[var(--color-text)] mb-4">
-                {{ blog.metadata.title }}
-            </h1>
-
-            {# Meta: author + date #}
-            <div class="flex items-center gap-3 mt-6">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
-                    {{ (blog.metadata.author or "A")[0] | upper }}
-                </div>
-                <div>
-                    <p class="text-sm font-medium text-[var(--color-text)]">{{ blog.metadata.author or "Unknown" }}</p>
-                    <p class="text-xs text-[var(--color-muted)]">{{ blog.metadata.date or "Unknown date" }}</p>
-                </div>
-            </div>
-
-            {# Tags #}
-            {% if blog.metadata.tags and blog.metadata.tags.length %}
-            <div class="flex flex-wrap gap-2 mt-5">
-                {% for tag in blog.metadata.tags %}
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[var(--color-tag-bg)] text-[var(--color-tag-text)] hover:opacity-80 transition-opacity cursor-default">
-                    {{ tag }}
-                </span>
-                {% endfor %}
-            </div>
-            {% endif %}
-        </header>
-
         {# Cover Image #}
         {% if blog.metadata.cover %}
         <figure class="mb-10 -mx-6 sm:-mx-12">

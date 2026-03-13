@@ -94,6 +94,11 @@ export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 30
             // Docs index
             if ((url.pathname === "/docs" || url.pathname === "/docs/") && hasDocs && docDir) {
                 const docs = await getAllPosts(docDir, docFilesRaw);
+                if (docs.length > 0) {
+                    const firstLevelDoc = docs.find(p => !((p as any).relativePath).includes('/') && !((p as any).relativePath).includes('\\'));
+                    const firstDocSlug = (firstLevelDoc || docs[0]).metadata.slug;
+                    return Response.redirect(`http://${url.host}/doc/${firstDocSlug}`, 302);
+                }
                 const docFolderMetadata = getFolderMetadata(docDir, docFilesRaw);
                 const html = renderSectionIndexPage('doc', docs, docFolderMetadata, inscribe, sourceDir, navState, isDev);
                 return new Response(html, { headers: { "Content-Type": "text/html" } });

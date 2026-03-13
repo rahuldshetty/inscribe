@@ -117,9 +117,12 @@ export async function build(options: BuildOptions) {
         const { posts: docs, folderMetadata } = await buildSection('doc', sourceDir, outputDir, docFiles, isRelease, inscribe, navState);
 
         await fs.ensureDir(path.join(outputDir, "docs"));
-        let docIndex = renderSectionIndexPage('doc', docs, folderMetadata, inscribe, sourceDir, navState);
-        if (isRelease) docIndex = await minifyHtml(docIndex);
-        await fs.writeFile(path.join(outputDir, "docs", "index.html"), docIndex);
+        if (docs.length > 0) {
+            const firstLevelDoc = docs.find(p => !((p as any).relativePath).includes('/') && !((p as any).relativePath).includes('\\'));
+            const firstDocSlug = (firstLevelDoc || docs[0]).metadata.slug;
+            const redirectHtml = `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=/doc/${firstDocSlug}"></head><body>Redirecting...</body></html>`;
+            await fs.writeFile(path.join(outputDir, "docs", "index.html"), redirectHtml);
+        }
 
         if (!redirectUrl) redirectUrl = "/docs/";
     }
