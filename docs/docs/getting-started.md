@@ -52,6 +52,7 @@ This will create a new directory `my-docs` with the following structure:
 - `docs/`: Your documentation markdown files.
 - `blogs/`: Your blog post markdown files.
 - `inscribe.yaml`: Main configuration file.
+- `static/`: Your static assets (images, fonts, etc.).
 - `layouts/`: Custom Nunjucks templates.
 - `themes/`: Custom CSS themes.
 

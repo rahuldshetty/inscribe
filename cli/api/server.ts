@@ -136,9 +136,9 @@ export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 30
                 }
             }
 
-            // Static files — serve if file exists in sourceDir
-            const relativePath = url.pathname.slice(1);
-            if (relativePath) {
+            // Static files — serve if file exists in sourceDir and is under /static/
+            if (url.pathname.startsWith("/static/")) {
+                const relativePath = url.pathname.slice(1);
                 const staticFilePath = path.join(sourceDir, relativePath);
                 if (fs.existsSync(staticFilePath) && fs.statSync(staticFilePath).isFile()) {
                     const file = Bun.file(staticFilePath);
