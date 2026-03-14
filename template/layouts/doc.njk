@@ -27,7 +27,7 @@
                                     {{ renderNode(item.node, depth + 1, currentDirPath) }}
                                 {% else %}
                                     <div class="rounded-md hover:bg-[var(--color-tag-bg)] transition-all">
-                                        <a href="{{ ('/doc/' + item.post.metadata.slug) | url }}" 
+                                        <a href="{{ item.post.url | url }}" 
                                            style="padding-left: {{ (depth + 1) * 16 + 8 }}px"
                                            class="text-sm py-1.5 block transition-colors {% if item.post.metadata.slug == doc.metadata.slug %}text-[var(--color-text)] font-semibold border-l-2 border-[var(--color-text)] -ml-[2px]!{% else %}text-[var(--color-muted)] hover:text-[var(--color-text)]{% endif %}">
                                             {{ item.post.metadata.title }}
@@ -44,7 +44,7 @@
                             {{ renderNode(item.node, depth, currentDirPath) }}
                         {% else %}
                             <div class="rounded-md hover:bg-[var(--color-tag-bg)] transition-all">
-                                <a href="{{ ('/doc/' + item.post.metadata.slug) | url }}" 
+                                <a href="{{ item.post.url | url }}" 
                                    style="padding-left: {{ depth * 16 + 8 }}px"
                                    class="text-sm py-1.5 block transition-colors {% if item.post.metadata.slug == doc.metadata.slug %}text-[var(--color-text)] font-semibold border-l-2 border-[var(--color-text)] -ml-[2px]!{% else %}text-[var(--color-muted)] hover:text-[var(--color-text)]{% endif %}">
                                     {{ item.post.metadata.title }}

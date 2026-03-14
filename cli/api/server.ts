@@ -19,6 +19,9 @@ export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 30
 
             // Read inscribe config
             const inscribe = await readInscribeFile(sourceDir);
+            if (isDev) {
+                inscribe.base_url = "/";
+            }
 
             const blogPath = inscribe.blog_path === "null" || !inscribe.blog_path ? null : inscribe.blog_path;
             const docPath = inscribe.doc_path === "null" || !inscribe.doc_path ? null : inscribe.doc_path;
@@ -39,13 +42,19 @@ export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 30
                     : [];
 
             // Helper: parse all posts in a directory, attaching relativePath and sorting
-            const getAllPosts = async (dir: string, files: string[]): Promise<Blog[]> => {
+            const getAllPosts = async (dir: string, files: string[], singularFolder: string): Promise<Blog[]> => {
                 const posts = await Promise.all(
                     files
                         .filter((f) => !f.endsWith("index.md"))
                         .map(async (f) => {
                             const post = await parseBlogPost(path.join(dir, f));
-                            (post as any).relativePath = f;
+                            const relativePath = f.replace(/\\/g, '/');
+                            const relativeDir = path.dirname(relativePath).replace(/\\/g, '/');
+                            const dirPrefix = relativeDir === '.' ? '' : relativeDir + '/';
+                            
+                            (post as any).relativePath = relativePath;
+                            (post as any).relativeDir = relativeDir === '.' ? '' : relativeDir;
+                            (post as any).url = `/${singularFolder}/${dirPrefix}${post.metadata.slug}`;
                             return post;
                         })
                 );
@@ -86,41 +95,41 @@ export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 30
 
             // Blogs index
             if ((url.pathname === "/blogs" || url.pathname === "/blogs/") && hasBlog && blogDir) {
-                const blogs = await getAllPosts(blogDir, blogFiles);
+                const blogs = await getAllPosts(blogDir, blogFiles, 'blog');
                 const html = renderSectionIndexPage('blog', blogs, {}, inscribe, sourceDir, navState, isDev);
                 return new Response(html, { headers: { "Content-Type": "text/html" } });
             }
 
             // Docs index
             if ((url.pathname === "/docs" || url.pathname === "/docs/") && hasDocs && docDir) {
-                const docs = await getAllPosts(docDir, docFilesRaw);
+                const docs = await getAllPosts(docDir, docFilesRaw, 'doc');
                 if (docs.length > 0) {
-                    const firstLevelDoc = docs.find(p => !((p as any).relativePath).includes('/') && !((p as any).relativePath).includes('\\'));
-                    const firstDocSlug = (firstLevelDoc || docs[0]).metadata.slug;
-                    return Response.redirect(`http://${url.host}/doc/${firstDocSlug}`, 302);
+                    const firstLevelDoc = docs.find(p => !(p as any).relativeDir);
+                    const firstDoc = firstLevelDoc || docs[0];
+                    return Response.redirect(`http://${url.host}${(firstDoc as any).url}`, 302);
                 }
                 const docFolderMetadata = getFolderMetadata(docDir, docFilesRaw);
                 const html = renderSectionIndexPage('doc', docs, docFolderMetadata, inscribe, sourceDir, navState, isDev);
                 return new Response(html, { headers: { "Content-Type": "text/html" } });
             }
 
-            // Blog page — match by frontmatter slug, not filename
+            // Blog page — match by pre-calculated URL
             if (url.pathname.startsWith("/blog/") && blogDir) {
-                const slug = url.pathname.replace("/blog/", "").replace(/\/$/, "");
-                const blogs = await getAllPosts(blogDir, blogFiles);
-                const blog = blogs.find((p) => p.metadata.slug === slug);
+                const pathName = url.pathname.replace(/\/$/, "");
+                const blogs = await getAllPosts(blogDir, blogFiles, 'blog');
+                const blog = blogs.find((p) => (p as any).url === pathName);
                 if (blog) {
                     const fullHtml = await renderSectionPage('blog', blog, blogs, {}, inscribe, sourceDir, navState, isDev);
                     return new Response(fullHtml, { headers: { "Content-Type": "text/html" } });
                 }
             }
 
-            // Doc page — match by frontmatter slug, not filename
+            // Doc page — match by pre-calculated URL
             if (url.pathname.startsWith("/doc/") && docDir) {
-                const slug = url.pathname.replace("/doc/", "").replace(/\/$/, "");
-                const docs = await getAllPosts(docDir, docFilesRaw);
+                const pathName = url.pathname.replace(/\/$/, "");
+                const docs = await getAllPosts(docDir, docFilesRaw, 'doc');
                 const docFolderMetadata = getFolderMetadata(docDir, docFilesRaw);
-                const doc = docs.find((p) => p.metadata.slug === slug);
+                const doc = docs.find((p) => (p as any).url === pathName);
                 if (doc) {
                     const fullHtml = await renderSectionPage('doc', doc, docs, docFolderMetadata, inscribe, sourceDir, navState, isDev);
                     return new Response(fullHtml, { headers: { "Content-Type": "text/html" } });

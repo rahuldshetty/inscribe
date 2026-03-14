@@ -7,7 +7,7 @@
     <div class="max-w-4xl">
         <!-- Logo Placeholder -->
         <div class="mb-10 flex justify-center">
-            <img src="/inscribe.png" alt="Inscribe Logo" class="w-72 h-72 object-contain" />
+            <img src="{{ '/inscribe.png' | url }}" alt="Inscribe Logo" class="w-72 h-72 object-contain" />
         </div>
 
         <p class="text-xl sm:text-3xl text-[var(--color-muted)] mb-12 leading-relaxed font-light">
@@ -15,7 +15,7 @@
         </p>
         <div class="flex flex-col sm:flex-row gap-6 items-center justify-center mb-20">
             {% if navState.hasDocs %}
-            <a href="/docs/" class="px-10 py-4 w-full sm:w-auto text-xl font-bold text-[var(--color-bg)] bg-[var(--color-text)] rounded-xl hover:scale-105 transition-all shadow-lg">
+            <a href="{{ '/docs/' | url }}" class="px-10 py-4 w-full sm:w-auto text-xl font-bold text-[var(--color-bg)] bg-[var(--color-text)] rounded-xl hover:scale-105 transition-all shadow-lg">
                 Get Started
             </a>
             {% endif %}

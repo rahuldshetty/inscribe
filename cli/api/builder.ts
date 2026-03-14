@@ -48,7 +48,14 @@ const buildSection = async (
         }
 
         const post = await parseBlogPost(filePath);
-        (post as any).relativePath = path.relative(sectionRoot, filePath);
+        const relativePath = path.relative(sectionRoot, filePath);
+        const relativeDir = path.dirname(relativePath).replace(/\\/g, '/');
+        const dirPrefix = relativeDir === '.' ? '' : relativeDir + '/';
+        
+        (post as any).relativePath = relativePath;
+        (post as any).relativeDir = relativeDir === '.' ? '' : relativeDir;
+        (post as any).url = `/${singularFolder}/${dirPrefix}${post.metadata.slug}`;
+        
         posts.push(post);
     }
 
@@ -62,7 +69,10 @@ const buildSection = async (
     for (const post of posts) {
         let fullHtml = await renderSectionPage(type, post, posts, folderMetadata, inscribe, sourceDir, navState);
         if (isRelease) fullHtml = await minifyHtml(fullHtml);
-        await fs.writeFile(path.join(outputDir, singularFolder, `${post.metadata.slug}.html`), fullHtml);
+        
+        const outDir = path.join(outputDir, singularFolder, (post as any).relativeDir);
+        await fs.ensureDir(outDir);
+        await fs.writeFile(path.join(outDir, `${post.metadata.slug}.html`), fullHtml);
     }
 
     return { posts, folderMetadata };
@@ -126,9 +136,9 @@ export async function build(options: BuildOptions) {
 
         await fs.ensureDir(path.join(outputDir, "docs"));
         if (docs.length > 0) {
-            const firstLevelDoc = docs.find(p => !((p as any).relativePath).includes('/') && !((p as any).relativePath).includes('\\'));
-            const firstDocSlug = (firstLevelDoc || docs[0]).metadata.slug;
-            const redirectHtml = `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=${normalizeUrl(`/doc/${firstDocSlug}`, inscribe)}"></head><body>Redirecting...</body></html>`;
+            const firstLevelDoc = docs.find(p => !(p as any).relativeDir);
+            const firstDoc = firstLevelDoc || docs[0];
+            const redirectHtml = `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=${normalizeUrl((firstDoc as any).url, inscribe)}"></head><body>Redirecting...</body></html>`;
             await fs.writeFile(path.join(outputDir, "docs", "index.html"), redirectHtml);
         }
 
