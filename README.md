@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/inscribe.png" alt="Inscribe Logo" width="240" />
+  <img src="docs/static/inscribe.png" alt="Inscribe Logo" width="240" />
   <!-- <h1>Inscribe</h1> -->
   <p><strong>A minimalist, high-performance Static Site Generator (SSG)</strong></p>
   <p>

@@ -24,6 +24,7 @@ Below are all the available settings supported by the Inscribe framework:
 | `blog_path`    | string  | `blog`          | The directory where your blog posts are stored.           |
 | `doc_path`     | string  | `docs`          | The directory where your documentation is stored.         |
 | `show_doc_nav` | boolean | `true`          | Whether to show the left navigation sidebar on doc pages. |
+| `base_url`     | string  | `/`             | The base URL path for the site (useful for subpath hosting). |
 
 ## Sample Configuration
 
@@ -42,6 +43,9 @@ doc_path: 'guides'
 # Visibility
 show_home: true
 show_doc_nav: true
+
+# Advanced
+base_url: '/my-project/'
 ```
 
 ## Advanced Settings
@@ -57,3 +61,15 @@ You can effectively "disable" the blog or documentation sections by setting thei
 ### Sidebar Visibility
 
 If you are building a small documentation site with only a few pages, you might want to set `show_doc_nav: false` to hide the left sidebar and give more focus to the content.
+
+### Base URL and Subpath Hosting
+
+The `base_url` setting is critical when your site is hosted on a subpath rather than the root of a domain. This is common for **GitHub Pages**, where sites are often hosted at `https://<username>.github.io/<repository-name>/`.
+
+In such cases, you should set `base_url` to your repository name:
+
+```yaml
+base_url: '/inscribe/'
+```
+
+This ensures that all internal links, CSS, and asset paths are correctly prefixed, preventing "404 Not Found" errors on your deployed site.

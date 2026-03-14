@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "path";
 import { minifyHtml } from "../utils/minifier";
-import { parseBlogPost, renderSectionPage, renderSectionIndexPage, renderHomePage, NavState } from "./renderer";
+import { parseBlogPost, renderSectionPage, renderSectionIndexPage, renderHomePage, renderRedirectPage, NavState } from "./renderer";
 import { Blog } from "../schemas/blog";
 import { InscribeConfig } from "../schemas/inscribe";
 import { readInscribeFile } from "./inscribe_reader";
@@ -138,7 +138,7 @@ export async function build(options: BuildOptions) {
         if (docs.length > 0) {
             const firstLevelDoc = docs.find(p => !(p as any).relativeDir);
             const firstDoc = firstLevelDoc || docs[0];
-            const redirectHtml = `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=${normalizeUrl((firstDoc as any).url, inscribe)}"></head><body>Redirecting...</body></html>`;
+            const redirectHtml = renderRedirectPage(normalizeUrl((firstDoc as any).url, inscribe));
             await fs.writeFile(path.join(outputDir, "docs", "index.html"), redirectHtml);
         }
 
@@ -150,7 +150,7 @@ export async function build(options: BuildOptions) {
     if (hasHome) {
         indexPage = renderHomePage(inscribe, sourceDir, navState);
     } else if (redirectUrl) {
-        indexPage = `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=${redirectUrl}"></head><body>Redirecting...</body></html>`;
+        indexPage = renderRedirectPage(redirectUrl);
     } else {
         indexPage = `<!DOCTYPE html><html><body>No content available.</body></html>`;
     }
