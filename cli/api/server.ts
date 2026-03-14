@@ -127,6 +127,16 @@ export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 30
                 }
             }
 
+            // Static files — serve if file exists in sourceDir
+            const relativePath = url.pathname.slice(1);
+            if (relativePath) {
+                const staticFilePath = path.join(sourceDir, relativePath);
+                if (fs.existsSync(staticFilePath) && fs.statSync(staticFilePath).isFile()) {
+                    const file = Bun.file(staticFilePath);
+                    return new Response(file);
+                }
+            }
+
             return new Response("Not Found", { status: 404 });
         },
         websocket: {

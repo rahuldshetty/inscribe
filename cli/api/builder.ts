@@ -142,4 +142,29 @@ export async function build(options: BuildOptions) {
     }
 
     await fs.writeFile(path.join(outputDir, "index.html"), indexPage);
+
+    // Copy static assets
+    console.log("Copying static assets...");
+    const excludedExtensions = [".md", ".mdx", ".njk", ".yaml", ".yml"];
+    const excludedDirs = ["layouts", ".git", "node_modules"];
+
+    const copyRecursive = async (src: string, dest: string) => {
+        const entries = fs.readdirSync(src, { withFileTypes: true });
+        for (const entry of entries) {
+            const srcPath = path.join(src, entry.name);
+            const destPath = path.join(dest, entry.name);
+
+            if (entry.isDirectory()) {
+                if (excludedDirs.includes(entry.name)) continue;
+                await fs.ensureDir(destPath);
+                await copyRecursive(srcPath, destPath);
+            } else {
+                if (excludedExtensions.includes(path.extname(entry.name))) continue;
+                if (entry.name === "inscribe.yaml" || entry.name === "inscribe.yml") continue;
+                await fs.copy(srcPath, destPath);
+            }
+        }
+    };
+
+    await copyRecursive(sourceDir, outputDir);
 }

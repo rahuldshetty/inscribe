@@ -13,5 +13,5 @@
 		"checkJs": true,
 		"rewriteRelativeImportExtensions": true
 	},
-	"include": ["cli/**/*.ts", "template/**/*.ts"]
+	"include": ["cli/**/*.ts", "template/**/*.ts", "dist/**/*.ts"]
 }

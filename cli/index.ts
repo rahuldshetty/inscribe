@@ -1,4 +1,4 @@
-#! /usr/bin/env bun
+#!/usr/bin/env bun
 import { Cli, defineCommand } from "clerc";
 import fs from "fs-extra";
 import path from "path";

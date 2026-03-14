@@ -1,6 +1,6 @@
 <div align="center">
-  <img src="https://via.placeholder.com/150x150.png?text=Inscribe" alt="Inscribe Logo" width="120" />
-  <h1>Inscribe</h1>
+  <img src="docs/inscribe.png" alt="Inscribe Logo" width="240" />
+  <!-- <h1>Inscribe</h1> -->
   <p><strong>A minimalist, high-performance Static Site Generator (SSG)</strong></p>
   <p>
     <img src="https://img.shields.io/badge/status-under%20development-orange" alt="Project Status" />
@@ -21,8 +21,8 @@ Inscribe is a modern static site generator built with **Bun**, **MDX**, and **Pr
 - [x] **CLI** – Simple commands to scaffold, develop, and build your site.
 - [x] **Dev Server** – Local development server with instant live reload.
 - [x] **MDX & Markdown** – Write content using powerful MDX and standard Markdown.
+- [x] **Themes** – Customizable and extensible theme system.
 - [ ] **Search** – Integrated full-text search.
-- [ ] **Themes** – Customizable and extensible theme system.
 - [ ] **Plugins** – Flexible plugin architecture for extending functionality.
 
 ## 🚀 Quick Start
@@ -31,10 +31,10 @@ Inscribe is a modern static site generator built with **Bun**, **MDX**, and **Pr
 
 ```bash
 # Using Bun (Recommended)
-bun install -g inscribe
+bun install -g @rahuldshetty/inscribe
 
 # Using npm
-npm install -g inscribe
+npm install -g @rahuldshetty/inscribe
 ```
 
 ### Usage
