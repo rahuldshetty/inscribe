@@ -2,5 +2,5 @@ title: Inscribe
 tagline: A simple, fast, and beautiful Static Site Generator for Documentation and Blogs.
 theme: medium
 show_home: true
-blog_path: ""
-doc_path: "docs"
+blog_path: ''
+doc_path: 'docs'

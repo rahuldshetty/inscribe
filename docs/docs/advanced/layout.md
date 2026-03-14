@@ -14,14 +14,14 @@ Inscribe uses the **Nunjucks** templating engine, allowing for powerful inherita
 
 The following built-in layouts are available in the framework:
 
-| Template | Description |
-| :--- | :--- |
-| `base.njk` | The core skeleton that includes the `<head>`, global navigation, and footer. All other layouts extend this. |
-| `home.njk` | The landing page layout. Minimal and focused on the hero section. |
-| `blog.njk` | Used for single blog post pages. Includes author metadata and tag capsules. |
-| `blog_index.njk` | The listing page for all your blog posts, featuring excerpts and cover thumbnails. |
-| `doc.njk` | The primary layout for documentation pages. It includes the hierarchical sidebar navigation. |
-| `doc_index.njk` | A section landing page for documentation folders. |
+| Template         | Description                                                                                                 |
+| :--------------- | :---------------------------------------------------------------------------------------------------------- |
+| `base.njk`       | The core skeleton that includes the `<head>`, global navigation, and footer. All other layouts extend this. |
+| `home.njk`       | The landing page layout. Minimal and focused on the hero section.                                           |
+| `blog.njk`       | Used for single blog post pages. Includes author metadata and tag capsules.                                 |
+| `blog_index.njk` | The listing page for all your blog posts, featuring excerpts and cover thumbnails.                          |
+| `doc.njk`        | The primary layout for documentation pages. It includes the hierarchical sidebar navigation.                |
+| `doc_index.njk`  | A section landing page for documentation folders.                                                           |
 
 ## Template Inheritance
 
@@ -40,5 +40,6 @@ You can override any built-in template by creating a file with the same name in 
 ### Example: Custom Header Partial
 
 Layouts often include "partials" from the `partials/` folder. To customize the header, you would typically override the partial instead of the entire layout:
+
 1. Create `layouts/partials/header.njk` in your project.
 2. Inscribe will automatically pick yours up over the built-in one during the build process.

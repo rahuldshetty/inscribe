@@ -13,6 +13,7 @@ The sidebar is automatically generated based on the folder structure and files w
 ## Sorting Logic
 
 Inscribe builds the sidebar hierarchy using a two-step sorting process:
+
 1. **Weight**: Defined in the frontmatter (doc page). Lower numbers appear at the top.
 2. **Title**: If weights are missing or equal, items are sorted alphabetically.
 
@@ -33,12 +34,13 @@ docs/
 ```
 
 **Resulting Sidebar:**
+
 - Getting Started
 - Installation
 - **Pro Features** (folder)
   - Side Bar
   - Themes
-- API (folder - *automatically named*)
+- API (folder - _automatically named_)
   - Reference
 
 ## Assigning Weights
@@ -46,6 +48,7 @@ docs/
 Weights should be assigned in the YAML frontmatter of your `.md` files.
 
 **Sample: First page**
+
 ```yaml
 ---
 title: Introduction
@@ -54,6 +57,7 @@ weight: 10
 ```
 
 **Sample: Middle page**
+
 ```yaml
 ---
 title: Configuration
@@ -70,7 +74,7 @@ By default, Inscribe uses the folder name as the title in the sidebar. To custom
 
 ```yaml
 ---
-title: "Advanced Customization"
+title: 'Advanced Customization'
 weight: 100
 ---
 ```

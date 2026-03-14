@@ -63,7 +63,6 @@ For a live-reloading development experience, use:
 inscribe dev
 ```
 
-
 ## Building Your Site
 
 To build your site, run the `build` command from your project root:
