@@ -14,6 +14,14 @@ export interface BuildOptions {
     env: string;
 }
 
+const normalizeUrl = (url: string, config: InscribeConfig) => {
+    if (url.startsWith('http')) return url;
+    let base = config.base_url || '/';
+    if (!base.endsWith('/')) base += '/';
+    const suffix = url.startsWith('/') ? url.slice(1) : url;
+    return base + suffix;
+}
+
 const buildSection = async (
     type: 'blog' | 'doc',
     sourceDir: string,
@@ -102,7 +110,7 @@ export async function build(options: BuildOptions) {
         if (isRelease) blogIndex = await minifyHtml(blogIndex);
         await fs.writeFile(path.join(outputDir, "blogs", "index.html"), blogIndex);
 
-        if (!redirectUrl) redirectUrl = "/blogs/";
+        if (!redirectUrl) redirectUrl = normalizeUrl("/blogs/", inscribe);
     }
 
     // Build docs
@@ -120,11 +128,11 @@ export async function build(options: BuildOptions) {
         if (docs.length > 0) {
             const firstLevelDoc = docs.find(p => !((p as any).relativePath).includes('/') && !((p as any).relativePath).includes('\\'));
             const firstDocSlug = (firstLevelDoc || docs[0]).metadata.slug;
-            const redirectHtml = `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=/doc/${firstDocSlug}"></head><body>Redirecting...</body></html>`;
+            const redirectHtml = `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=${normalizeUrl(`/doc/${firstDocSlug}`, inscribe)}"></head><body>Redirecting...</body></html>`;
             await fs.writeFile(path.join(outputDir, "docs", "index.html"), redirectHtml);
         }
 
-        if (!redirectUrl) redirectUrl = "/docs/";
+        if (!redirectUrl) redirectUrl = normalizeUrl("/docs/", inscribe);
     }
 
     // Generate index.html

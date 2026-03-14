@@ -13,12 +13,12 @@
         </p>
         <div class="flex flex-col sm:flex-row gap-4 items-center justify-center">
             {% if navState.hasBlog %}
-            <a href="/blogs/" class="px-8 py-3 w-full sm:w-auto text-lg font-medium text-[var(--color-bg)] bg-[var(--color-text)] rounded-full hover:opacity-90 transition-opacity">
+            <a href="{{ '/blogs/' | url }}" class="px-8 py-3 w-full sm:w-auto text-lg font-medium text-[var(--color-bg)] bg-[var(--color-text)] rounded-full hover:opacity-90 transition-opacity">
                 Read the Blog
             </a>
             {% endif %}
             {% if navState.hasDocs %}
-            <a href="/docs/" class="px-8 py-3 w-full sm:w-auto text-lg font-medium text-[var(--color-text)] bg-[var(--color-border)] rounded-full hover:bg-[var(--color-muted)] hover:text-white transition-colors">
+            <a href="{{ '/docs/' | url }}" class="px-8 py-3 w-full sm:w-auto text-lg font-medium text-[var(--color-text)] bg-[var(--color-border)] rounded-full hover:bg-[var(--color-muted)] hover:text-white transition-colors">
                 Documentation
             </a>
             {% endif %}

@@ -27,7 +27,7 @@
                                     {{ renderNode(item.node, depth + 1, currentDirPath) }}
                                 {% else %}
                                     <div class="rounded-md hover:bg-[var(--color-tag-bg)] transition-all">
-                                        <a href="/doc/{{ item.post.metadata.slug }}" 
+                                        <a href="{{ ('/doc/' + item.post.metadata.slug) | url }}" 
                                            style="padding-left: {{ (depth + 1) * 16 + 8 }}px"
                                            class="text-sm py-1.5 block transition-colors {% if item.post.metadata.slug == doc.metadata.slug %}text-[var(--color-text)] font-semibold border-l-2 border-[var(--color-text)] -ml-[2px]!{% else %}text-[var(--color-muted)] hover:text-[var(--color-text)]{% endif %}">
                                             {{ item.post.metadata.title }}
@@ -44,7 +44,7 @@
                             {{ renderNode(item.node, depth, currentDirPath) }}
                         {% else %}
                             <div class="rounded-md hover:bg-[var(--color-tag-bg)] transition-all">
-                                <a href="/doc/{{ item.post.metadata.slug }}" 
+                                <a href="{{ ('/doc/' + item.post.metadata.slug) | url }}" 
                                    style="padding-left: {{ depth * 16 + 8 }}px"
                                    class="text-sm py-1.5 block transition-colors {% if item.post.metadata.slug == doc.metadata.slug %}text-[var(--color-text)] font-semibold border-l-2 border-[var(--color-text)] -ml-[2px]!{% else %}text-[var(--color-muted)] hover:text-[var(--color-text)]{% endif %}">
                                     {{ item.post.metadata.title }}
@@ -69,7 +69,7 @@
         {% if blog.metadata.cover %}
         <figure class="mb-10 -mx-6 sm:-mx-12">
             <img
-                src="{{ blog.metadata.cover }}"
+                src="{{ blog.metadata.cover | url }}"
                 alt="{{ blog.metadata.cover_alt or blog.metadata.title }}"
                 class="w-full object-cover rounded-none sm:rounded-xl max-h-[480px]"
             />
@@ -92,7 +92,7 @@
         <hr class="my-12 border-[var(--color-border)]" />
 
         <footer class="flex items-center justify-between text-sm text-[var(--color-muted)]">
-            <a href="/docs/"
+            <a href="{{ '/docs/' | url }}"
                class="hover:text-[var(--color-text)] transition-colors flex items-center gap-1.5 font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />

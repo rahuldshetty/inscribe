@@ -26,16 +26,29 @@ export const parseBlogPost = async (filePath: string) => {
  * 1. User project layouts
  * 2. CLI built-in layouts
  */
-const getRenderer = (sourceDir: string) => {
+const getRenderer = (sourceDir: string, config: InscribeConfig) => {
     const userLayouts = path.resolve(sourceDir, "layouts");
     const builtInLayouts = path.resolve(__dirname, "../../template/layouts");
 
     const searchPaths = [userLayouts, builtInLayouts];
 
-    return new nunjucks.Environment(
+    const env = new nunjucks.Environment(
         new nunjucks.FileSystemLoader(searchPaths),
         { autoescape: true }
     );
+
+    env.addFilter('url', (urlPath: string) => {
+        if (!urlPath) return urlPath;
+        if (urlPath.startsWith('http') || urlPath.startsWith('//') || urlPath.startsWith('data:')) return urlPath;
+        
+        let base = config.base_url || '/';
+        if (!base.endsWith('/')) base += '/';
+        
+        const pathSuffix = urlPath.startsWith('/') ? urlPath.slice(1) : urlPath;
+        return base + pathSuffix;
+    });
+
+    return env;
 };
 
 import { FolderMetadata } from "../schemas/folder";
@@ -127,8 +140,8 @@ export const renderSectionPage = async (
     navState: NavState,
     isDev: boolean = false
 ) => {
-    const html = await markdown2HTML(post.markdown, post.isMDX);
-    const env = getRenderer(sourceDir);
+    const html = await markdown2HTML(post.markdown, post.isMDX, inscribe);
+    const env = getRenderer(sourceDir, inscribe);
     const themeCSS = resolveThemeCSS(inscribe.theme ?? 'default', sourceDir);
 
     const template = type === 'blog' ? "blog.njk" : "doc.njk";
@@ -160,7 +173,7 @@ export const renderSectionIndexPage = (
     navState: NavState,
     isDev: boolean = false
 ) => {
-    const env = getRenderer(sourceDir);
+    const env = getRenderer(sourceDir, inscribe);
     const themeCSS = resolveThemeCSS(inscribe.theme ?? 'default', sourceDir);
     
     const template = type === 'blog' ? "blog_index.njk" : "doc_index.njk";
@@ -187,7 +200,7 @@ export const renderHomePage = (
     navState: NavState,
     isDev: boolean = false
 ) => {
-    const env = getRenderer(sourceDir);
+    const env = getRenderer(sourceDir, inscribe);
     const themeCSS = resolveThemeCSS(inscribe.theme ?? 'default', sourceDir);
 
     return env.render("home.njk", {

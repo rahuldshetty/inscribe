@@ -46,7 +46,33 @@ export function parseFrontMatter(content: string) {
     }
 }
 
-export const markdown2HTML = async (content: string, isMDX: boolean = false) => {
+import { InscribeConfig } from "../schemas/inscribe";
+
+export const markdown2HTML = async (content: string, isMDX: boolean = false, config?: InscribeConfig) => {
+    const base = config?.base_url || '/';
+    const normalizedBase = base.endsWith('/') ? base : base + '/';
+
+    const renderer = new marked.Renderer();
+    
+    // Custom renderer to handle base_url for links and images
+    renderer.link = ({ href, title, text }: any) => {
+        let finalHref = href;
+        if (href && !href.startsWith('http') && !href.startsWith('//') && !href.startsWith('#')) {
+            const pathSuffix = href.startsWith('/') ? href.slice(1) : href;
+            finalHref = normalizedBase + pathSuffix;
+        }
+        return `<a href="${finalHref}"${title ? ` title="${title}"` : ""}>${text}</a>`;
+    };
+
+    renderer.image = ({ href, title, text }: any) => {
+        let finalHref = href;
+        if (href && !href.startsWith('http') && !href.startsWith('//') && !href.startsWith('data:')) {
+            const pathSuffix = href.startsWith('/') ? href.slice(1) : href;
+            finalHref = normalizedBase + pathSuffix;
+        }
+        return `<img src="${finalHref}" alt="${text || ""}"${title ? ` title="${title}"` : ""}>`;
+    };
+
     if (isMDX) {
         try {
             // compile MDX -> JS
@@ -64,9 +90,9 @@ export const markdown2HTML = async (content: string, isMDX: boolean = false) => 
             return html;
         } catch (e) {
             console.error("MDX compilation error:", e);
-            return await marked(content);
+            return await marked(content, { renderer });
         }
     }
-    const html = await marked(content)
+    const html = await marked(content, { renderer })
     return html;
 }

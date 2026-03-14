@@ -4,3 +4,4 @@ theme: medium
 show_home: true
 blog_path: ''
 doc_path: 'docs'
+base_url: '/inscribe/'

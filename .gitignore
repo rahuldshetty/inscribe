@@ -90,5 +90,6 @@ package-lock.json
 *v8.log
 /lib/
 dist/
+docs-dist/
 tmp/
 tmp/*
