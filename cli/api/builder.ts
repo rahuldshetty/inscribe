@@ -56,10 +56,23 @@ const buildSection = async (
         (post as any).relativeDir = relativeDir === '.' ? '' : relativeDir;
         (post as any).url = `/${singularFolder}/${dirPrefix}${post.metadata.slug}`;
         
+        // Filter out drafts for build command (where isRelease is true or false but we are in builder)
+        // Actually, the requirement says "For builds do not show draft blog pages, but it is okay to show it for 'dev' command".
+        // builder.ts is used by the build command. server.ts is used by the dev command.
+        if (type === 'blog' && post.metadata.draft) {
+            continue;
+        }
+
         posts.push(post);
     }
 
     posts.sort((a, b) => {
+        if (type === 'blog') {
+            const dateA = new Date(a.metadata.date || 0).getTime();
+            const dateB = new Date(b.metadata.date || 0).getTime();
+            if (dateA !== dateB) return dateB - dateA; // Descending order
+        }
+
         const weightA = a.metadata.weight ?? 0;
         const weightB = b.metadata.weight ?? 0;
         if (weightA !== weightB) return weightA - weightB;

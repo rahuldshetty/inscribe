@@ -39,6 +39,11 @@
                             {% endif %}
                             <span class="text-xs text-[var(--color-muted)]">{{ blog.metadata.date or 'Undated' }}</span>
 
+                            {% if blog.metadata.draft and isDev %}
+                            <span class="text-[var(--color-border)]">·</span>
+                            <span class="inline-block text-xs px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 font-medium border border-yellow-200 dark:border-yellow-800/50">Draft</span>
+                            {% endif %}
+
                             {# Tags — show first 2 #}
                             {% if blog.metadata.tags and blog.metadata.tags.length %}
                             <span class="text-[var(--color-border)]">·</span>

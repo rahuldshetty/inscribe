@@ -59,6 +59,11 @@ export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 30
                         })
                 );
                 return posts.sort((a, b) => {
+                    if (singularFolder === 'blog') {
+                        const dateA = new Date(a.metadata.date || 0).getTime();
+                        const dateB = new Date(b.metadata.date || 0).getTime();
+                        if (dateA !== dateB) return dateB - dateA; // Descending order
+                    }
                     const wA = a.metadata.weight ?? 0;
                     const wB = b.metadata.weight ?? 0;
                     if (wA !== wB) return wA - wB;
