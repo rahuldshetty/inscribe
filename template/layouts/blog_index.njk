@@ -37,7 +37,7 @@
                             <span class="text-xs text-[var(--color-muted)] font-medium">{{ blog.metadata.author }}</span>
                             <span class="text-[var(--color-border)]">·</span>
                             {% endif %}
-                            <span class="text-xs text-[var(--color-muted)]">{{ blog.metadata.date or 'Undated' }}</span>
+                            <span class="text-xs text-[var(--color-muted)]">{{ blog.metadata.date | date if blog.metadata.date else 'Undated' }}</span>
 
                             {% if blog.metadata.draft and isDev %}
                             <span class="text-[var(--color-border)]">·</span>

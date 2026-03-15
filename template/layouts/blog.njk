@@ -36,7 +36,7 @@
                 </div>
                 <div>
                     <p class="text-sm font-medium text-[var(--color-text)]">{{ blog.metadata.author or "Unknown" }}</p>
-                    <p class="text-xs text-[var(--color-muted)]">{{ blog.metadata.date or "Unknown date" }}</p>
+                    <p class="text-xs text-[var(--color-muted)]">{{ blog.metadata.date | date if blog.metadata.date else "Unknown date" }}</p>
                 </div>
             </div>
 

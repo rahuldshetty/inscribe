@@ -48,6 +48,21 @@ const getRenderer = (sourceDir: string, config: InscribeConfig) => {
         return base + pathSuffix;
     });
 
+    env.addFilter('date', (dateStr: string) => {
+        if (!dateStr) return 'Unknown date';
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return dateStr;
+            return new Intl.DateTimeFormat('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            }).format(date);
+        } catch (e) {
+            return dateStr;
+        }
+    });
+
     return env;
 };
 
