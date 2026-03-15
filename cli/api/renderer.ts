@@ -63,6 +63,14 @@ const getRenderer = (sourceDir: string, config: InscribeConfig) => {
         }
     });
 
+    env.addFilter('readingTime', (content: string) => {
+        if (!content) return '0 min read';
+        const wordsPerMinute = 225;
+        const words = content.trim().split(/\s+/).length;
+        const minutes = Math.ceil(words / wordsPerMinute);
+        return `${minutes} min read`;
+    });
+
     return env;
 };
 

@@ -22,22 +22,24 @@
 
                     {# Text content #}
                     <div class="flex-1 min-w-0">
-                        <h2 class="text-xl font-bold text-[var(--color-text)] leading-snug tracking-tight group-hover:text-[var(--color-muted)] transition-colors duration-150 truncate">
+                        <h2 class="text-xl font-bold text-[var(--color-text)] leading-snug tracking-tight group-hover:text-[var(--color-accent)] transition-colors duration-150">
                             {{ blog.metadata.title }}
                         </h2>
 
                         {% if blog.metadata.description or blog.metadata.excerpt %}
-                        <p class="mt-1.5 text-sm text-[var(--color-muted)] line-clamp-2 leading-relaxed">
+                        <p class="mt-2 text-sm text-[var(--color-muted)] line-clamp-2 leading-relaxed">
                             {{ blog.metadata.description or blog.metadata.excerpt }}
                         </p>
                         {% endif %}
 
-                        <div class="flex items-center gap-3 mt-3">
+                        <div class="flex items-center gap-3 mt-4">
                             {% if blog.metadata.author %}
                             <span class="text-xs text-[var(--color-muted)] font-medium">{{ blog.metadata.author }}</span>
                             <span class="text-[var(--color-border)]">·</span>
                             {% endif %}
                             <span class="text-xs text-[var(--color-muted)]">{{ blog.metadata.date | date if blog.metadata.date else 'Undated' }}</span>
+                            <span class="text-[var(--color-border)]">·</span>
+                            <span class="text-xs text-[var(--color-muted)] font-medium italic">{{ blog.markdown | readingTime }}</span>
 
                             {% if blog.metadata.draft and isDev %}
                             <span class="text-[var(--color-border)]">·</span>
@@ -46,12 +48,14 @@
 
                             {# Tags — show first 2 #}
                             {% if blog.metadata.tags and blog.metadata.tags.length %}
-                            <span class="text-[var(--color-border)]">·</span>
-                            {% for tag in blog.metadata.tags %}
-                            {% if loop.index <= 2 %}
-                            <span class="inline-block text-xs px-2 py-0.5 rounded-full bg-[var(--color-tag-bg)] text-[var(--color-tag-text)]">{{ tag }}</span>
-                            {% endif %}
-                            {% endfor %}
+                            <span class="hidden sm:inline text-[var(--color-border)]">·</span>
+                            <div class="hidden sm:flex items-center gap-2">
+                                {% for tag in blog.metadata.tags %}
+                                {% if loop.index <= 2 %}
+                                <span class="inline-block text-[10px] px-2 py-0.5 rounded-full bg-[var(--color-tag-bg)] text-[var(--color-tag-text)] font-semibold uppercase tracking-wider">{{ tag }}</span>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
                             {% endif %}
                         </div>
                     </div>
