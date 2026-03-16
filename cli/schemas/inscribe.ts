@@ -10,6 +10,7 @@ export const InscribeSchema = z.object({
     doc_path: z.string().default('docs').optional(),
     show_doc_nav: z.preprocess((val) => (typeof val === "string" ? val.toLowerCase() === "true" : val), z.boolean()).default(true).optional(),
     base_url: z.string().default('/').optional(),
+    google_analytics_id: z.string().default('').optional(),
 })
 
 export type InscribeConfig = z.infer<typeof InscribeSchema>;

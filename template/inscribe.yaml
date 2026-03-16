@@ -4,3 +4,4 @@ show_home: true
 blog_path: 'blogs'
 doc_path: 'docs'
 base_url: '/'
+google_analytics_id: ''

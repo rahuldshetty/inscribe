@@ -14,17 +14,18 @@ The `inscribe.yaml` file located in your project root is the central hub for con
 
 Below are all the available settings supported by the Inscribe framework:
 
-| Option         | Type    | Default         | Description                                               |
-| :------------- | :------ | :-------------- | :-------------------------------------------------------- |
-| `title`        | string  | `Inscribe`      | The main title of your website.                           |
-| `tagline`      | string  | `Inscribe Blog` | A short description or subtitle for your site.            |
-| `favicon`      | string  | `favicon.ico`   | Path to your site's favicon icon.                         |
-| `theme`        | string  | `default`       | Name of the theme to use (look in your `themes/` folder). |
-| `show_home`    | boolean | `true`          | Whether to display the landing/home page.                 |
-| `blog_path`    | string  | `blog`          | The directory where your blog posts are stored.           |
-| `doc_path`     | string  | `docs`          | The directory where your documentation is stored.         |
-| `show_doc_nav` | boolean | `true`          | Whether to show the left navigation sidebar on doc pages. |
-| `base_url`     | string  | `/`             | The base URL path for the site (useful for subpath hosting). |
+| Option                | Type    | Default         | Description                                                  |
+| :-------------------- | :------ | :-------------- | :----------------------------------------------------------- |
+| `title`               | string  | `Inscribe`      | The main title of your website.                              |
+| `tagline`             | string  | `Inscribe Blog` | A short description or subtitle for your site.               |
+| `favicon`             | string  | `favicon.ico`   | Path to your site's favicon icon.                            |
+| `theme`               | string  | `default`       | Name of the theme to use (look in your `themes/` folder).    |
+| `show_home`           | boolean | `true`          | Whether to display the landing/home page.                    |
+| `blog_path`           | string  | `blog`          | The directory where your blog posts are stored.              |
+| `doc_path`            | string  | `docs`          | The directory where your documentation is stored.            |
+| `show_doc_nav`        | boolean | `true`          | Whether to show the left navigation sidebar on doc pages.    |
+| `base_url`            | string  | `/`             | The base URL path for the site (useful for subpath hosting). |
+| `google_analytics_id` | string  | `""`            | Your Google Analytics Measurement ID (e.g., `G-XXXXXXXXXX`). |
 
 ## Sample Configuration
 
@@ -46,6 +47,9 @@ show_doc_nav: true
 
 # Advanced
 base_url: '/my-project/'
+
+# Analytics
+google_analytics_id: 'G-XXXXXXXXXX'
 ```
 
 ## Advanced Settings
@@ -73,3 +77,17 @@ base_url: '/inscribe/'
 ```
 
 This ensures that all internal links, CSS, and asset paths are correctly prefixed, preventing "404 Not Found" errors on your deployed site.
+
+### Google Analytics Integration
+
+You can easily integrate Google Analytics (GA4) into your Inscribe site by providing your Measurement ID.
+
+1.  Log in to your [Google Analytics](https://analytics.google.com/) account.
+2.  Navigate to your Property settings and find your **Measurement ID** (it usually starts with `G-`).
+3.  Add the ID to your `inscribe.yaml` file:
+
+```yaml
+google_analytics_id: 'G-374829KJ82'
+```
+
+When you build your site, Inscribe will automatically inject the necessary `gtag.js` scripts into every page. If the field is left empty or omitted, no analytics scripts will be included.
