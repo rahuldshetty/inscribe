@@ -4,6 +4,7 @@ import { parseBlogPost, renderSectionPage, renderSectionIndexPage, renderHomePag
 import { readInscribeFile } from "./inscribe_reader";
 import { parseFolderMetadata } from "../utils/markdown";
 import { Blog } from "../schemas/blog";
+import { generateRSS } from "./rss_generator";
 
 export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 3000) => {
     return {
@@ -103,6 +104,13 @@ export const LocalServer = (sourceDir: string, isDev: boolean = false, port = 30
                 const blogs = await getAllPosts(blogDir, blogFiles, 'blog');
                 const html = renderSectionIndexPage('blog', blogs, {}, inscribe, sourceDir, navState, isDev);
                 return new Response(html, { headers: { "Content-Type": "text/html" } });
+            }
+
+            // RSS feed
+            if (url.pathname === "/rss.xml" && hasBlog && blogDir) {
+                const blogs = await getAllPosts(blogDir, blogFiles, 'blog');
+                const rss = generateRSS(blogs, inscribe);
+                return new Response(rss, { headers: { "Content-Type": "application/rss+xml" } });
             }
 
             // Docs index

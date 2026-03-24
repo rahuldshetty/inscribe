@@ -7,6 +7,7 @@ import { InscribeConfig } from "../schemas/inscribe";
 import { readInscribeFile } from "./inscribe_reader";
 import { parseFolderMetadata } from "../utils/markdown";
 import { FolderMetadata } from "../schemas/folder";
+import { generateRSS, normalizeUrl } from "./rss_generator";
 
 export interface BuildOptions {
     sourceDir: string;
@@ -14,13 +15,6 @@ export interface BuildOptions {
     env: string;
 }
 
-const normalizeUrl = (url: string, config: InscribeConfig) => {
-    if (url.startsWith('http')) return url;
-    let base = config.base_url || '/';
-    if (!base.endsWith('/')) base += '/';
-    const suffix = url.startsWith('/') ? url.slice(1) : url;
-    return base + suffix;
-}
 
 const buildSection = async (
     type: 'blog' | 'doc',
@@ -134,6 +128,11 @@ export async function build(options: BuildOptions) {
         await fs.writeFile(path.join(outputDir, "blogs", "index.html"), blogIndex);
 
         if (!redirectUrl) redirectUrl = normalizeUrl("/blogs/", inscribe);
+
+        // Generate RSS feed
+        const rssFeed = generateRSS(blogs, inscribe);
+        await fs.writeFile(path.join(outputDir, "rss.xml"), rssFeed);
+        console.log("RSS feed generated at rss.xml");
     }
 
     // Build docs

@@ -91,6 +91,7 @@
     </script>
     {% endif %}
     {% block head %}{% endblock %}
+    <link rel="alternate" type="application/rss+xml" title="{{ config.title }} RSS Feed" href="{{ '/rss.xml' | url }}" />
 </head>
 <body class="bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased">
 

@@ -51,3 +51,9 @@ showToc: true
 draft: false
 ---
 ```
+
+## RSS Feed
+
+Inscribe automatically generates an RSS 2.0 feed for your blog posts. This allows readers to subscribe to your blog using their favorite RSS reader.
+
+The RSS feed is located at `/rss.xml` relative to your `base_url`.
