@@ -9,12 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 
     {# Inject the resolved theme CSS (light + dark variables) #}
-    <style>{{ themeCSS | safe }}
-    [data-theme="light"] { color-scheme: light; }
-    [data-theme="dark"]  { color-scheme: dark; }
+    <style>
+    {{ themeCSS | safe }}
     </style>
 
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
     <script>
         tailwind.config = {
             theme: {

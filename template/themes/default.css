@@ -11,31 +11,75 @@
   color-scheme: light dark;
 
   /* Backgrounds */
-  --color-bg:       light-dark(#ffffff, #0f172a);
-  --color-bg-nav:   light-dark(rgba(255, 255, 255, 0.90), rgba(15, 23, 42, 0.90));
+  --color-bg:       #ffffff;
+  --color-bg-nav:   rgba(255, 255, 255, 0.90);
 
   /* Text */
-  --color-text:     light-dark(#0f172a, #f8fafc);
-  --color-muted:    light-dark(#64748b, #94a3b8);
+  --color-text:     #0f172a;
+  --color-muted:    #64748b;
 
   /* Borders & dividers */
-  --color-border:   light-dark(#e2e8f0, #1e293b);
+  --color-border:   #e2e8f0;
 
-  /* Links & accents — blue in both modes for clear visibility */
-  --color-accent:   light-dark(#2563eb, #60a5fa);
+  /* Links & accents */
+  --color-accent:   #2563eb;
 
   /* Tag / badge pills */
-  --color-tag-bg:   light-dark(#f1f5f9, #1e293b);
-  --color-tag-text: light-dark(#475569, #cbd5e1);
+  --color-tag-bg:   #f1f5f9;
+  --color-tag-text: #475569;
 
   /* Inline code */
-  --color-code-bg:  light-dark(#f1f5f9, #1e293b);
+  --color-code-bg:  #f1f5f9;
 
   /* Code blocks */
-  --color-pre-bg:   light-dark(#0f172a, #020617);
-  --color-pre-text: light-dark(#e2e8f0, #e2e8f0);
+  --color-pre-bg:   #0f172a;
+  --color-pre-text: #e2e8f0;
 
   /* Fonts */
   --font-sans:      'Inter', sans-serif;
   --font-serif:     'Merriweather', Georgia, serif;
 }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg:       #0f172a;
+    --color-bg-nav:   rgba(15, 23, 42, 0.90);
+    --color-text:     #f8fafc;
+    --color-muted:    #94a3b8;
+    --color-border:   #1e293b;
+    --color-accent:   #60a5fa;
+    --color-tag-bg:   #1e293b;
+    --color-tag-text: #cbd5e1;
+    --color-code-bg:  #1e293b;
+    --color-pre-bg:   #020617;
+  }
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --color-bg:       #ffffff;
+  --color-bg-nav:   rgba(255, 255, 255, 0.90);
+  --color-text:     #0f172a;
+  --color-muted:    #64748b;
+  --color-border:   #e2e8f0;
+  --color-accent:   #2563eb;
+  --color-tag-bg:   #f1f5f9;
+  --color-tag-text: #475569;
+  --color-code-bg:  #f1f5f9;
+  --color-pre-bg:   #0f172a;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg:       #0f172a;
+  --color-bg-nav:   rgba(15, 23, 42, 0.90);
+  --color-text:     #f8fafc;
+  --color-muted:    #94a3b8;
+  --color-border:   #1e293b;
+  --color-accent:   #60a5fa;
+  --color-tag-bg:   #1e293b;
+  --color-tag-text: #cbd5e1;
+  --color-code-bg:  #1e293b;
+  --color-pre-bg:   #020617;
+}
+

@@ -5,35 +5,80 @@
    ========================================================================== */
 
    :root {
-    color-scheme: light dark;
-  
-    /* Backgrounds: Warm cream (light), Warm charcoal (dark) */
-    --color-bg:       light-dark(#fbf0d9, #1c1b18);
-    --color-bg-nav:   light-dark(rgba(251, 240, 217, 0.90), rgba(28, 27, 24, 0.90));
-  
-    /* Text: Deep brown (light), Soft warm light (dark) */
-    --color-text:     light-dark(#433422, #cecdc3);
-    --color-muted:    light-dark(#8f8373, #87857e);
-  
-    /* Borders & dividers */
-    --color-border:   light-dark(#e6dac3, #383531);
-  
-    /* Links & accents: Warm red/orange */
-    --color-accent:   light-dark(#b24a3e, #d36a5d);
-  
-    /* Tag / badge pills */
-    --color-tag-bg:   light-dark(#eedfc5, #2d2a26);
-    --color-tag-text: light-dark(#5c4c3b, #b5b3a8);
-  
-    /* Inline code */
-    --color-code-bg:  light-dark(#eedfc5, #2d2a26);
-  
-    /* Code blocks */
-    --color-pre-bg:   light-dark(#433422, #111110);
-    --color-pre-text: light-dark(#fbf0d9, #cecdc3);
-  
-    /* Fonts */
-    --font-sans:      'Inter', sans-serif;
-    --font-serif:     'Merriweather', Georgia, serif;
+  color-scheme: light dark;
+
+  /* Backgrounds */
+  --color-bg:       #fbf0d9;
+  --color-bg-nav:   rgba(251, 240, 217, 0.90);
+
+  /* Text */
+  --color-text:     #433422;
+  --color-muted:    #8f8373;
+
+  /* Borders & dividers */
+  --color-border:   #e6dac3;
+
+  /* Links & accents */
+  --color-accent:   #b24a3e;
+
+  /* Tag / badge pills */
+  --color-tag-bg:   #eedfc5;
+  --color-tag-text: #5c4c3b;
+
+  /* Inline code */
+  --color-code-bg:  #eedfc5;
+
+  /* Code blocks */
+  --color-pre-bg:   #433422;
+  --color-pre-text: #fbf0d9;
+
+  /* Fonts */
+  --font-sans:      'Inter', sans-serif;
+  --font-serif:     'Merriweather', Georgia, serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg:       #1c1b18;
+    --color-bg-nav:   rgba(28, 27, 24, 0.90);
+    --color-text:     #cecdc3;
+    --color-muted:    #87857e;
+    --color-border:   #383531;
+    --color-accent:   #d36a5d;
+    --color-tag-bg:   #2d2a26;
+    --color-tag-text: #b5b3a8;
+    --color-code-bg:  #2d2a26;
+    --color-pre-bg:   #111110;
+    --color-pre-text: #cecdc3;
   }
+}
+
+[data-theme="light"] {
+  --color-bg:       #fbf0d9;
+  --color-bg-nav:   rgba(251, 240, 217, 0.90);
+  --color-text:     #433422;
+  --color-muted:    #8f8373;
+  --color-border:   #e6dac3;
+  --color-accent:   #b24a3e;
+  --color-tag-bg:   #eedfc5;
+  --color-tag-text: #5c4c3b;
+  --color-code-bg:  #eedfc5;
+  --color-pre-bg:   #433422;
+  --color-pre-text: #fbf0d9;
+}
+
+[data-theme="dark"] {
+  --color-bg:       #1c1b18;
+  --color-bg-nav:   rgba(28, 27, 24, 0.90);
+  --color-text:     #cecdc3;
+  --color-muted:    #87857e;
+  --color-border:   #383531;
+  --color-accent:   #d36a5d;
+  --color-tag-bg:   #2d2a26;
+  --color-tag-text: #b5b3a8;
+  --color-code-bg:  #2d2a26;
+  --color-pre-bg:   #111110;
+  --color-pre-text: #cecdc3;
+}
+
   
