@@ -92,6 +92,7 @@ const buildCommand = defineCommand(
             },
             env: {
                 type: String,
+                choices: ["dev", "release"],
                 default: "release",
                 description: "Build environment (dev or release)",
             },

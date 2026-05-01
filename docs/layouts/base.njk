@@ -13,8 +13,8 @@
     {{ themeCSS | safe }}
     </style>
 
+    {% if isDev %}
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
-
     <script>
         tailwind.config = {
             theme: {
@@ -79,6 +79,10 @@
             },
         }
     </script>
+    {% else %}
+    <link rel="stylesheet" href="{{ '/static/tailwind.css' | url }}">
+    {% endif %}
+
     {% block head %}{% endblock %}
 </head>
 <body class="bg-[var(--color-bg)] text-[var(--color-text)] font-sans antialiased min-h-screen flex flex-col">

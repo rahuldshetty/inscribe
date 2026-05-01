@@ -179,4 +179,11 @@ export async function build(options: BuildOptions) {
         console.log("Copying static assets from:", staticDir);
         await fs.copy(staticDir, path.join(outputDir, "static"));
     }
+
+    // Generate static Tailwind CSS for release builds
+    if (isRelease) {
+        const { generateTailwind } = await import("../utils/tailwind");
+        await generateTailwind(outputDir, path.join(outputDir, "static"));
+    }
 }
+
