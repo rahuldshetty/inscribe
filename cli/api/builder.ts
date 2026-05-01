@@ -183,7 +183,7 @@ export async function build(options: BuildOptions) {
     // Generate static Tailwind CSS for release builds
     if (isRelease) {
         const { generateTailwind } = await import("../utils/tailwind");
-        await generateTailwind(outputDir, path.join(outputDir, "static"));
+        await generateTailwind(outputDir, path.join(outputDir, "static"), sourceDir);
     }
 }
 
